@@ -140,38 +140,6 @@ $ranking = [
         </div>
     </section>
 
-    <!-- Categorías -->
-    <section class="categories">
-        <div class="container">
-            <h3 class="section-title">Explora por Categoría</h3>
-            <div class="category-grid">
-                <button class="category-card active" data-category="todos">
-                    <span class="category-icon">🌍</span>
-                    <span class="category-name">Todos</span>
-                </button>
-                <button class="category-card" data-category="arboles">
-                    <span class="category-icon">🌳</span>
-                    <span class="category-name">Árboles</span>
-                </button>
-                <button class="category-card" data-category="agua">
-                    <span class="category-icon">💧</span>
-                    <span class="category-name">Agua</span>
-                </button>
-                <button class="category-card" data-category="fauna">
-                    <span class="category-icon">🐦</span>
-                    <span class="category-name">Fauna</span>
-                </button>
-                <button class="category-card" data-category="residuos">
-                    <span class="category-icon">♻️</span>
-                    <span class="category-name">Residuos</span>
-                </button>
-                <button class="category-card" data-category="educacion">
-                    <span class="category-icon">📚</span>
-                    <span class="category-name">Educación</span>
-                </button>
-            </div>
-        </div>
-    </section>
 
     <!-- Retos Activos -->
     <section class="challenges" id="retos">
