@@ -6,9 +6,11 @@ $auth = new Auth();
 $error = '';
 $success = '';
 
-// Si ya está logueado, redirigir al inicio
+// Si ya está logueado, redirigir según corresponda
 if (estaLogueado()) {
-    header('Location: index.php');
+    $redirect = isset($_SESSION['redirect_after_login']) ? $_SESSION['redirect_after_login'] : 'index.php';
+    unset($_SESSION['redirect_after_login']);
+    header("Location: $redirect");
     exit;
 }
 
@@ -18,10 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] === 'login') {
         $resultado = $auth->login($_POST['email'], $_POST['password']);
         if ($resultado['success']) {
-            header('Location: index.php');
+            // Redirigir a la página solicitada o al inicio
+            $redirect = isset($_SESSION['redirect_after_login']) ? $_SESSION['redirect_after_login'] : 'index.php';
+            unset($_SESSION['redirect_after_login']);
+            header("Location: $redirect");
             exit;
-        } else {
-            $error = $resultado['message'];
         }
     }
     
