@@ -43,7 +43,7 @@ $categorias = $retoModel->getCategorias();
                     <a href="index.php" class="nav-link">Descubrir</a>
                     <a href="retos.php" class="nav-link active">Retos</a>
                     <a href="index.php#ranking" class="nav-link">Ranking</a>
-                    <a href="#comunidad" class="nav-link">Comunidad</a>
+                    <a href="comunidad.php" class="nav-link">Comunidad</a>
                 </nav>
                 <div class="header-actions">
                     <?php if ($user_logged_in): ?>
