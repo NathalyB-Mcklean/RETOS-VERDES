@@ -30,8 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Guardar tab activo en localStorage
             localStorage.setItem('activeTab', targetTab);
             
-            // Scroll suave hacia arriba
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+
         });
     });
     
