@@ -14,6 +14,63 @@ class Reto {
     }
     
     /**
+     * Obtener todos los retos con filtros (para página retos.php)
+     */
+    public function getRetos($categoria = 'todos', $busqueda = '') {
+        try {
+            $sql = "SELECT r.*, c.nombre as categoria_nombre, c.icono as categoria_icono,
+                           c.color as categoria_color, c.slug as categoria_slug,
+                           (SELECT COUNT(*) FROM participaciones WHERE reto_id = r.id) as participantes_actuales,
+                           (SELECT COUNT(*) FROM reportes WHERE reto_id = r.id AND estado = 'aprobado') as reportes_aprobados,
+                           ROUND((SELECT COUNT(*) FROM participaciones WHERE reto_id = r.id) / 
+                           NULLIF(r.meta_participantes, 0) * 100, 0) as progreso
+                    FROM retos r
+                    INNER JOIN categorias c ON r.categoria_id = c.id
+                    WHERE r.estado = 'activo'";
+            
+            $params = [];
+            
+            // Filtro por categoría
+            if ($categoria !== 'todos' && is_numeric($categoria)) {
+                $sql .= " AND r.categoria_id = :categoria";
+                $params['categoria'] = $categoria;
+            }
+            
+            // Filtro por búsqueda
+            if (!empty($busqueda)) {
+                $sql .= " AND (r.titulo LIKE :busqueda OR r.descripcion LIKE :busqueda)";
+                $params['busqueda'] = "%{$busqueda}%";
+            }
+            
+            $sql .= " ORDER BY r.fecha_creacion DESC";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($params);
+            
+            return $stmt->fetchAll();
+            
+        } catch(PDOException $e) {
+            error_log("Error en getRetos: " . $e->getMessage());
+            return [];
+        }
+    }
+    
+    /**
+     * Obtener todas las categorías
+     */
+    public function getCategorias() {
+        try {
+            $sql = "SELECT * FROM categorias ORDER BY nombre ASC";
+            $stmt = $this->db->query($sql);
+            return $stmt->fetchAll();
+            
+        } catch(PDOException $e) {
+            error_log("Error en getCategorias: " . $e->getMessage());
+            return [];
+        }
+    }
+    
+    /**
      * Obtener todos los retos activos
      */
     public function getRetosActivos($filtros = []) {
