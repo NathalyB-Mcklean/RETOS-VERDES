@@ -257,14 +257,14 @@ $categorias = $retoModel->getCategorias();
                     <div class="challenge-progress">
                         <div class="progress-bar">
                             <?php 
-                            $progreso_global = $reto['participantes_max'] > 0 
-                                ? ($reto['participantes_actuales'] / $reto['participantes_max']) * 100 
+                            $progreso_global = $reto['meta_participantes'] > 0 
+                                ? ($reto['participantes_actuales'] / $reto['meta_participantes']) * 100 
                                 : 0;
                             ?>
                             <div class="progress-fill" style="width: <?php echo min(100, $progreso_global); ?>%"></div>
                         </div>
                         <span class="progress-text">
-                            <?php echo $reto['participantes_actuales']; ?>/<?php echo $reto['participantes_max']; ?> participantes
+                            <?php echo $reto['participantes_actuales']; ?>/<?php echo $reto['meta_participantes']; ?> participantes
                         </span>
                     </div>
                     
