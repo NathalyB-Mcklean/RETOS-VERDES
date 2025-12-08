@@ -15,7 +15,7 @@ $publicaciones = [
         'avatar' => '👩',
         'tiempo' => 'Hace 2 horas',
         'contenido' => '¡Acabamos de plantar 50 árboles nativos en el Parque Omar! Increíble ver a la comunidad unida por el medio ambiente 🌳💚',
-        'imagen' => true,
+        'imagen' => 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&q=80',
         'reto' => 'Planta un Árbol Nativo',
         'likes' => 124,
         'comentarios' => 18,
@@ -27,7 +27,7 @@ $publicaciones = [
         'avatar' => '👨',
         'tiempo' => 'Hace 5 horas',
         'contenido' => 'Terminamos la limpieza de la Quebrada Juan Díaz. Recolectamos más de 200kg de residuos. ¡Sigamos así Panamá! 💪',
-        'imagen' => true,
+        'imagen' => 'https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?w=800&q=80',
         'reto' => 'Limpieza de Quebrada',
         'likes' => 98,
         'comentarios' => 12,
@@ -39,7 +39,7 @@ $publicaciones = [
         'avatar' => '👧',
         'tiempo' => 'Hace 1 día',
         'contenido' => 'Mi jardín de polinizadores está floreciendo. Ya veo abejas y mariposas todos los días 🦋🐝',
-        'imagen' => true,
+        'imagen' => 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&q=80',
         'reto' => 'Jardín de Polinizadores',
         'likes' => 156,
         'comentarios' => 24,
@@ -244,10 +244,7 @@ $grupos = [
                             
                             <?php if ($post['imagen']): ?>
                             <div class="post-image">
-                                <div class="placeholder-image">
-                                    <span class="placeholder-icon">📸</span>
-                                    <span class="placeholder-text">Imagen del reto completado</span>
-                                </div>
+                                <img src="<?php echo $post['imagen']; ?>" alt="<?php echo $post['reto']; ?>" loading="lazy">
                             </div>
                             <?php endif; ?>
 

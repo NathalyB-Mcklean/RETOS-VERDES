@@ -154,7 +154,7 @@ $categorias = $retoModel->getCategorias();
                                 <?php echo $reto['puntos_recompensa']; ?> pts
                             </span>
                         </div>
-                        <a href="reto.php?id=<?php echo $reto['id']; ?>" class="btn btn-challenge">Ver Reto</a>
+                        <a href="retos.php?id=<?php echo $reto['id']; ?>" class="btn btn-challenge">Ver Reto</a>
                     </div>
                 </div>
                 <?php endforeach; ?>
