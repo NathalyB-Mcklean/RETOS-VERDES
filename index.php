@@ -80,7 +80,7 @@ $ranking = [
             <div class="header-content">
                 <div class="logo">
                     <span class="logo-icon">🌱</span>
-                    <h1>Retos Verdes</h1>
+                    <h1>RETOS VERDES</h1>
                 </div>
                 <nav class="main-nav">
                     <a href="#retos" class="nav-link active">Descubrir</a>
