@@ -1,329 +1,364 @@
 <?php
-session_start();
+require_once 'config/database.php';
+require_once 'includes/auth.php';
 
-// Simulación de datos (posteriormente conectarás a tu base de datos)
-$user_logged_in = isset($_SESSION['user_id']);
-$user_name = $user_logged_in ? $_SESSION['user_name'] : 'Invitado';
-$user_points = $user_logged_in ? $_SESSION['user_points'] : 0;
-$user_avatar = $user_logged_in ? $_SESSION['user_avatar'] : 'default-avatar.png';
+$auth = new Auth();
+$error = '';
+$success = '';
 
-// Retos activos de ejemplo
-$retos_activos = [
-    [
-        'id' => 1,
-        'titulo' => 'Planta un Árbol Nativo',
-        'descripcion' => 'Planta árboles nativos en tu comunidad',
-        'categoria' => 'arboles',
-        'puntos' => 100,
-        'participantes' => 45,
-        'duracion' => 'Mensual',
-        'icono' => '🌳',
-        'progreso' => 60
-    ],
-    [
-        'id' => 2,
-        'titulo' => 'Limpieza de Quebrada',
-        'descripcion' => 'Limpia ríos y quebradas locales',
-        'categoria' => 'agua',
-        'puntos' => 150,
-        'participantes' => 32,
-        'duracion' => 'Semanal',
-        'icono' => '💧',
-        'progreso' => 45
-    ],
-    [
-        'id' => 3,
-        'titulo' => 'Jardín de Polinizadores',
-        'descripcion' => 'Crea espacios para abejas y mariposas',
-        'categoria' => 'fauna',
-        'puntos' => 80,
-        'participantes' => 28,
-        'duracion' => 'Mensual',
-        'icono' => '🐦',
-        'progreso' => 75
-    ],
-    [
-        'id' => 4,
-        'titulo' => 'Reduce el Plástico',
-        'descripcion' => 'Elimina plásticos de un solo uso',
-        'categoria' => 'residuos',
-        'puntos' => 50,
-        'participantes' => 67,
-        'duracion' => 'Semanal',
-        'icono' => '♻️',
-        'progreso' => 30
-    ]
-];
+// Si ya está logueado, redirigir al inicio
+if (estaLogueado()) {
+    header('Location: index.php');
+    exit;
+}
 
-// Ranking comunitario
-$ranking = [
-    ['posicion' => 1, 'nombre' => 'María González', 'puntos' => 2450, 'avatar' => '👩', 'cambio' => '+3'],
-    ['posicion' => 2, 'nombre' => 'Carlos Ruiz', 'puntos' => 2180, 'avatar' => '👨', 'cambio' => '-1'],
-    ['posicion' => 3, 'nombre' => 'Ana Martínez', 'puntos' => 1950, 'avatar' => '👧', 'cambio' => '+2'],
-    ['posicion' => 4, 'nombre' => 'Luis Pérez', 'puntos' => 1780, 'avatar' => '🧑', 'cambio' => '-1'],
-    ['posicion' => 5, 'nombre' => 'Sofia Torres', 'puntos' => 1650, 'avatar' => '👩', 'cambio' => '0']
-];
+// Procesar formulario de login
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    
+    if ($_POST['action'] === 'login') {
+        $resultado = $auth->login($_POST['email'], $_POST['password']);
+        if ($resultado['success']) {
+            header('Location: index.php');
+            exit;
+        } else {
+            $error = $resultado['message'];
+        }
+    }
+    
+    if ($_POST['action'] === 'register') {
+        $resultado = $auth->registrar($_POST);
+        if ($resultado['success']) {
+            $success = $resultado['message'] . ' Por favor inicia sesión.';
+        } else {
+            $error = $resultado['message'];
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retos Verdes Comunitarios | Panamá</title>
+    <title>Iniciar Sesión | Retos Verdes</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Clash+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            padding: 24px;
+        }
+        
+        .auth-box {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            max-width: 450px;
+            width: 100%;
+            padding: 48px;
+        }
+        
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .auth-logo-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        
+        .auth-logo h1 {
+            font-size: 28px;
+            color: var(--primary-green);
+            margin-bottom: 8px;
+        }
+        
+        .auth-logo p {
+            color: var(--light-text);
+            font-size: 14px;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 32px;
+            background: var(--bg-light);
+            padding: 4px;
+            border-radius: 12px;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .auth-tab.active {
+            background: white;
+            color: var(--primary-green);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-text);
+            font-size: 14px;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--bg-light);
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--light-green);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .avatar-selector {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .avatar-option {
+            font-size: 32px;
+            padding: 8px;
+            border: 2px solid var(--bg-light);
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .avatar-option:hover {
+            border-color: var(--light-green);
+            transform: scale(1.1);
+        }
+        
+        .avatar-option.selected {
+            border-color: var(--primary-green);
+            background: var(--bg-light);
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(74, 124, 89, 0.3);
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .alert-error {
+            background: #fee;
+            color: #c33;
+            border: 2px solid #fcc;
+        }
+        
+        .alert-success {
+            background: #efe;
+            color: #3c3;
+            border: 2px solid #cfc;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 24px;
+        }
+        
+        .back-link a {
+            color: var(--primary-green);
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <span class="logo-icon">🌱</span>
-                    <h1>RETOS VERDES</h1>
-                </div>
-                <nav class="main-nav">
-                    <a href="#retos" class="nav-link active">Descubrir</a>
-                    <a href="#ranking" class="nav-link">Ranking</a>
-                    <a href="#mis-retos" class="nav-link">Mis Retos</a>
-                    <a href="#comunidad" class="nav-link">Comunidad</a>
-                </nav>
-                <div class="header-actions">
-                    <?php if ($user_logged_in): ?>
-                        <div class="user-points">
-                            <span class="points-icon">⭐</span>
-                            <span class="points-value"><?php echo number_format($user_points); ?></span>
-                        </div>
-                        <a href="profile.php" class="user-avatar">
-                            <span><?php echo $user_avatar; ?></span>
-                        </a>
-                    <?php else: ?>
-                        <a href="login.php" class="btn btn-primary">Iniciar Sesión</a>
-                    <?php endif; ?>
-                </div>
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-logo">
+                <div class="auth-logo-icon">🌱</div>
+                <h1>Retos Verdes</h1>
+                <p>Transforma tu comunidad</p>
             </div>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h2 class="hero-title">Transforma tu Comunidad</h2>
-                    <p class="hero-subtitle">Únete a retos ambientales, gana puntos y haz la diferencia en Panamá 🇵🇦</p>
-                    <div class="hero-stats">
-                        <div class="stat-item">
-                            <span class="stat-number">1,234</span>
-                            <span class="stat-label">Árboles Plantados</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">567</span>
-                            <span class="stat-label">Participantes</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">89</span>
-                            <span class="stat-label">Comunidades</span>
-                        </div>
-                    </div>
+            
+            <?php if ($error): ?>
+                <div class="alert alert-error"><?php echo $error; ?></div>
+            <?php endif; ?>
+            
+            <?php if ($success): ?>
+                <div class="alert alert-success"><?php echo $success; ?></div>
+            <?php endif; ?>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="cambiarTab('login')">Iniciar Sesión</button>
+                <button class="auth-tab" onclick="cambiarTab('register')">Registrarse</button>
+            </div>
+            
+            <!-- Formulario de Login -->
+            <form class="auth-form active" id="form-login" method="POST">
+                <input type="hidden" name="action" value="login">
+                
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" name="email" required placeholder="tu@email.com">
                 </div>
-                <div class="hero-image">
-                    <div class="hero-illustration">
-                        <span class="illustration-emoji">🌳</span>
-                        <span class="illustration-emoji">💧</span>
-                        <span class="illustration-emoji">🐦</span>
-                        <span class="illustration-emoji">♻️</span>
-                    </div>
+                
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" name="password" required placeholder="••••••••">
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Categorías -->
-    <section class="categories">
-        <div class="container">
-            <h3 class="section-title">Explora por Categoría</h3>
-            <div class="category-grid">
-                <button class="category-card active" data-category="todos">
-                    <span class="category-icon">🌍</span>
-                    <span class="category-name">Todos</span>
-                </button>
-                <button class="category-card" data-category="arboles">
-                    <span class="category-icon">🌳</span>
-                    <span class="category-name">Árboles</span>
-                </button>
-                <button class="category-card" data-category="agua">
-                    <span class="category-icon">💧</span>
-                    <span class="category-name">Agua</span>
-                </button>
-                <button class="category-card" data-category="fauna">
-                    <span class="category-icon">🐦</span>
-                    <span class="category-name">Fauna</span>
-                </button>
-                <button class="category-card" data-category="residuos">
-                    <span class="category-icon">♻️</span>
-                    <span class="category-name">Residuos</span>
-                </button>
-                <button class="category-card" data-category="educacion">
-                    <span class="category-icon">📚</span>
-                    <span class="category-name">Educación</span>
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Retos Activos -->
-    <section class="challenges" id="retos">
-        <div class="container">
-            <div class="section-header">
-                <h3 class="section-title">Retos Activos</h3>
-                <a href="retos.php" class="see-more">Ver todos →</a>
-            </div>
-            <div class="challenges-grid">
-                <?php foreach ($retos_activos as $reto): ?>
-                <div class="challenge-card" data-category="<?php echo $reto['categoria']; ?>">
-                    <div class="challenge-header">
-                        <span class="challenge-icon"><?php echo $reto['icono']; ?></span>
-                        <span class="challenge-duration"><?php echo $reto['duracion']; ?></span>
+                
+                <button type="submit" class="submit-btn">Iniciar Sesión</button>
+            </form>
+            
+            <!-- Formulario de Registro -->
+            <form class="auth-form" id="form-register" method="POST">
+                <input type="hidden" name="action" value="register">
+                <input type="hidden" name="avatar" id="avatar-input" value="👤">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre</label>
+                        <input type="text" name="nombre" required placeholder="Juan">
                     </div>
-                    <h4 class="challenge-title"><?php echo $reto['titulo']; ?></h4>
-                    <p class="challenge-description"><?php echo $reto['descripcion']; ?></p>
-                    <div class="challenge-progress">
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: <?php echo $reto['progreso']; ?>%"></div>
-                        </div>
-                        <span class="progress-text"><?php echo $reto['progreso']; ?>% completado</span>
-                    </div>
-                    <div class="challenge-footer">
-                        <div class="challenge-info">
-                            <span class="info-item">
-                                <span class="info-icon">👥</span>
-                                <?php echo $reto['participantes']; ?> participantes
-                            </span>
-                            <span class="info-item">
-                                <span class="info-icon">⭐</span>
-                                <?php echo $reto['puntos']; ?> pts
-                            </span>
-                        </div>
-                        <a href="reto.php?id=<?php echo $reto['id']; ?>" class="btn btn-challenge">¡Participar!</a>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    </section>
-
-    <!-- Ranking Comunitario -->
-    <section class="leaderboard" id="ranking">
-        <div class="container">
-            <div class="leaderboard-container">
-                <div class="leaderboard-header">
-                    <h3 class="section-title">🏆 Ranking Comunitario</h3>
-                    <div class="ranking-filters">
-                        <button class="filter-btn active">Semanal</button>
-                        <button class="filter-btn">Mensual</button>
-                        <button class="filter-btn">Anual</button>
+                    
+                    <div class="form-group">
+                        <label>Apellido</label>
+                        <input type="text" name="apellido" required placeholder="Pérez">
                     </div>
                 </div>
                 
-                <!-- Top 3 -->
-                <div class="top-three">
-                    <div class="top-card second">
-                        <div class="top-avatar"><?php echo $ranking[1]['avatar']; ?></div>
-                        <div class="top-badge">2</div>
-                        <span class="top-name"><?php echo $ranking[1]['nombre']; ?></span>
-                        <span class="top-points"><?php echo number_format($ranking[1]['puntos']); ?> pts</span>
-                    </div>
-                    <div class="top-card first">
-                        <div class="top-crown">👑</div>
-                        <div class="top-avatar winner"><?php echo $ranking[0]['avatar']; ?></div>
-                        <div class="top-badge">1</div>
-                        <span class="top-name"><?php echo $ranking[0]['nombre']; ?></span>
-                        <span class="top-points"><?php echo number_format($ranking[0]['puntos']); ?> pts</span>
-                    </div>
-                    <div class="top-card third">
-                        <div class="top-avatar"><?php echo $ranking[2]['avatar']; ?></div>
-                        <div class="top-badge">3</div>
-                        <span class="top-name"><?php echo $ranking[2]['nombre']; ?></span>
-                        <span class="top-points"><?php echo number_format($ranking[2]['puntos']); ?> pts</span>
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" name="email" required placeholder="tu@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Contraseña (mínimo 6 caracteres)</label>
+                    <input type="password" name="password" required placeholder="••••••••" minlength="6">
+                </div>
+                
+                <div class="form-group">
+                    <label>Comunidad</label>
+                    <select name="comunidad" required>
+                        <option value="">Selecciona tu comunidad</option>
+                        <option value="Ciudad de Panamá">Ciudad de Panamá</option>
+                        <option value="Colón">Colón</option>
+                        <option value="David">David</option>
+                        <option value="Santiago">Santiago</option>
+                        <option value="Chitré">Chitré</option>
+                        <option value="Penonomé">Penonomé</option>
+                        <option value="Aguadulce">Aguadulce</option>
+                        <option value="La Chorrera">La Chorrera</option>
+                        <option value="Arraiján">Arraiján</option>
+                        <option value="Boquete">Boquete</option>
+                        <option value="Otra">Otra</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Teléfono (opcional)</label>
+                    <input type="tel" name="telefono" placeholder="+507 6000-0000">
+                </div>
+                
+                <div class="form-group">
+                    <label>Elige tu Avatar</label>
+                    <div class="avatar-selector">
+                        <div class="avatar-option selected" onclick="seleccionarAvatar('👤', this)">👤</div>
+                        <div class="avatar-option" onclick="seleccionarAvatar('👨', this)">👨</div>
+                        <div class="avatar-option" onclick="seleccionarAvatar('👩', this)">👩</div>
+                        <div class="avatar-option" onclick="seleccionarAvatar('🧑', this)">🧑</div>
+                        <div class="avatar-option" onclick="seleccionarAvatar('👧', this)">👧</div>
+                        <div class="avatar-option" onclick="seleccionarAvatar('👦', this)">👦</div>
+                        <div class="avatar-option" onclick="seleccionarAvatar('🌱', this)">🌱</div>
+                        <div class="avatar-option" onclick="seleccionarAvatar('🌳', this)">🌳</div>
+                        <div class="avatar-option" onclick="seleccionarAvatar('🐦', this)">🐦</div>
+                        <div class="avatar-option" onclick="seleccionarAvatar('🦋', this)">🦋</div>
+                        <div class="avatar-option" onclick="seleccionarAvatar('🐝', this)">🐝</div>
+                        <div class="avatar-option" onclick="seleccionarAvatar('🌺', this)">🌺</div>
                     </div>
                 </div>
-
-                <!-- Lista de ranking -->
-                <div class="ranking-list">
-                    <?php for ($i = 3; $i < count($ranking); $i++): ?>
-                    <div class="ranking-item">
-                        <span class="ranking-position"><?php echo $ranking[$i]['posicion']; ?></span>
-                        <div class="ranking-avatar"><?php echo $ranking[$i]['avatar']; ?></div>
-                        <div class="ranking-info">
-                            <span class="ranking-name"><?php echo $ranking[$i]['nombre']; ?></span>
-                            <span class="ranking-points"><?php echo number_format($ranking[$i]['puntos']); ?> pts</span>
-                        </div>
-                        <span class="ranking-change <?php echo $ranking[$i]['cambio'][0] === '+' ? 'positive' : ($ranking[$i]['cambio'][0] === '-' ? 'negative' : ''); ?>">
-                            <?php echo $ranking[$i]['cambio']; ?>
-                        </span>
-                    </div>
-                    <?php endfor; ?>
-                </div>
+                
+                <button type="submit" class="submit-btn">Crear Cuenta</button>
+            </form>
+            
+            <div class="back-link">
+                <a href="index.php">← Volver al inicio</a>
             </div>
         </div>
-    </section>
-
-    <!-- ODS Section -->
-    <section class="ods-section">
-        <div class="container">
-            <h3 class="section-title">Contribuimos a los ODS de la ONU</h3>
-            <div class="ods-grid">
-                <div class="ods-card" style="background: linear-gradient(135deg, #e5243b 0%, #c41230 100%);">
-                    <span class="ods-number">5</span>
-                    <span class="ods-text">Igualdad de Género</span>
-                </div>
-                <div class="ods-card" style="background: linear-gradient(135deg, #26bde2 0%, #1a9aba 100%);">
-                    <span class="ods-number">6</span>
-                    <span class="ods-text">Agua Limpia</span>
-                </div>
-                <div class="ods-card" style="background: linear-gradient(135deg, #fd9d24 0%, #e67e22 100%);">
-                    <span class="ods-number">11</span>
-                    <span class="ods-text">Ciudades Sostenibles</span>
-                </div>
-                <div class="ods-card" style="background: linear-gradient(135deg, #3f7e44 0%, #2d5a31 100%);">
-                    <span class="ods-number">13</span>
-                    <span class="ods-text">Acción Climática</span>
-                </div>
-                <div class="ods-card" style="background: linear-gradient(135deg, #56c02b 0%, #3f8e1f 100%);">
-                    <span class="ods-number">15</span>
-                    <span class="ods-text">Vida Terrestre</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>Retos Verdes Comunitarios</h4>
-                    <p>Transformando comunidades panameñas a través de la acción ambiental</p>
-                </div>
-                <div class="footer-section">
-                    <h5>Enlaces</h5>
-                    <a href="#sobre">Sobre Nosotros</a>
-                    <a href="#como-funciona">Cómo Funciona</a>
-                    <a href="#contacto">Contacto</a>
-                </div>
-                <div class="footer-section">
-                    <h5>Legal</h5>
-                    <a href="#privacidad">Privacidad</a>
-                    <a href="#terminos">Términos</a>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 Retos Verdes Comunitarios - Panamá 🇵🇦</p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="script.js"></script>
+    </div>
+    
+    <script>
+        function cambiarTab(tab) {
+            // Actualizar tabs
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Actualizar formularios
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            document.getElementById('form-' + tab).classList.add('active');
+        }
+        
+        function seleccionarAvatar(emoji, element) {
+            document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById('avatar-input').value = emoji;
+        }
+    </script>
 </body>
 </html>
