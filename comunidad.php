@@ -145,7 +145,7 @@ $grupos = [
     <section class="community-hero">
         <div class="container">
             <div class="community-hero-content">
-                <h2 class="page-title">Comunidad Verde 🌍</h2>
+                <h2 class="page-title">Comunidad Verde</h2>
                 <p class="page-subtitle">Conecta, comparte y celebra tus logros ambientales con otros panameños</p>
             </div>
         </div>

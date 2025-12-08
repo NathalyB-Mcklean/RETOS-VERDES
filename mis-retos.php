@@ -159,7 +159,7 @@ function diasRestantes($fecha_limite) {
     <section class="my-challenges-hero">
         <div class="container">
             <div class="hero-content">
-                <h2 class="page-title">Mis Retos 🎯</h2>
+                <h2 class="page-title">Mis Retos</h2>
                 <p class="page-subtitle">Sigue tu progreso y alcanza nuevas metas ambientales</p>
             </div>
         </div>

@@ -1,10 +1,10 @@
 /* ============================================
-   MIS RETOS - ESTILOS
+   MIS RETOS - ESTILOS (Tonos Verdes)
    ============================================ */
 
 /* Hero Section */
 .my-challenges-hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
     padding: 60px 0 40px;
     color: white;
     text-align: center;
@@ -103,7 +103,7 @@
 }
 
 .tab-btn.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
     color: white;
 }
 
@@ -159,7 +159,7 @@
 .challenge-card-progress:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    border-color: #667eea;
+    border-color: #4a7c59;
 }
 
 .challenge-header {
@@ -188,7 +188,7 @@
 }
 
 .status-badge.in-progress {
-    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
     color: white;
 }
 
@@ -232,7 +232,7 @@
 .progress-percentage {
     font-size: 16px;
     font-weight: 700;
-    color: #667eea;
+    color: #4a7c59;
 }
 
 .progress-bar-large {
@@ -244,7 +244,7 @@
 
 .progress-fill-large {
     height: 100%;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(90deg, #4a7c59 0%, #3d6b4a 100%);
     border-radius: 10px;
     transition: width 0.5s ease;
 }
@@ -261,7 +261,7 @@
 
 .tasks-icon {
     font-size: 18px;
-    color: #2ecc71;
+    color: #4a7c59;
 }
 
 .tasks-text {
@@ -283,7 +283,7 @@
     align-items: center;
     gap: 6px;
     font-weight: 600;
-    color: #f39c12;
+    color: #4a7c59;
 }
 
 .points-reward .points-icon {
@@ -292,7 +292,7 @@
 
 .btn-continue {
     padding: 12px 24px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
     color: white;
     border: none;
     border-radius: 10px;
@@ -304,7 +304,7 @@
 
 .btn-continue:hover {
     transform: translateX(4px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(74, 124, 89, 0.3);
 }
 
 /* Retos Completados */
@@ -410,22 +410,22 @@
 }
 
 .btn-share {
-    background: #3498db;
+    background: #3d6b4a;
     color: white;
 }
 
 .btn-share:hover {
-    background: #2980b9;
+    background: #2f5438;
     transform: translateY(-2px);
 }
 
 .btn-repeat {
-    background: #2ecc71;
+    background: #4a7c59;
     color: white;
 }
 
 .btn-repeat:hover {
-    background: #27ae60;
+    background: #3d6b4a;
     transform: translateY(-2px);
 }
 
@@ -462,7 +462,7 @@
 .discover-redirect {
     text-align: center;
     padding: 80px 40px;
-    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
     border-radius: 20px;
     color: white;
 }
@@ -488,7 +488,7 @@
     display: inline-block;
     padding: 16px 40px;
     background: white;
-    color: #2ecc71;
+    color: #4a7c59;
     border-radius: 12px;
     font-weight: 700;
     font-size: 16px;
@@ -509,14 +509,14 @@
 }
 
 .motivation-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
     border-radius: 24px;
     padding: 48px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: white;
-    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 8px 24px rgba(74, 124, 89, 0.3);
 }
 
 .motivation-content {

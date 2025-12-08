@@ -1,10 +1,10 @@
 /* ============================================
-   PÁGINA DE COMUNIDAD - ESTILOS
+   PÁGINA DE COMUNIDAD - ESTILOS (Tonos Verdes)
    ============================================ */
 
 /* Hero Section */
 .community-hero {
-    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
     padding: 60px 0 40px;
     color: white;
     text-align: center;
@@ -65,7 +65,7 @@
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -86,7 +86,7 @@
 }
 
 .post-input:hover {
-    border-color: #2ecc71;
+    border-color: #4a7c59;
     background: white;
 }
 
@@ -169,7 +169,7 @@
 
 .btn-join {
     padding: 6px 16px;
-    background: #2ecc71;
+    background: #4a7c59;
     color: white;
     border: none;
     border-radius: 6px;
@@ -180,7 +180,7 @@
 }
 
 .btn-join:hover {
-    background: #27ae60;
+    background: #3d6b4a;
     transform: scale(1.05);
 }
 
@@ -199,8 +199,8 @@
 }
 
 .event-item:hover {
-    border-color: #2ecc71;
-    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.15);
+    border-color: #4a7c59;
+    box-shadow: 0 4px 12px rgba(74, 124, 89, 0.15);
 }
 
 .event-icon {
@@ -230,7 +230,7 @@
 .event-participants {
     display: inline-block;
     font-size: 12px;
-    color: #2ecc71;
+    color: #4a7c59;
     font-weight: 600;
     margin-top: 8px;
 }
@@ -238,7 +238,7 @@
 .btn-event {
     width: 100%;
     padding: 10px;
-    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
     color: white;
     border: none;
     border-radius: 8px;
@@ -249,7 +249,7 @@
 
 .btn-event:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+    box-shadow: 0 4px 12px rgba(74, 124, 89, 0.3);
 }
 
 /* ============================================
@@ -291,7 +291,7 @@
 }
 
 .filter-tab.active {
-    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
     color: white;
 }
 
@@ -331,7 +331,7 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -387,7 +387,7 @@
 }
 
 .placeholder-image {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
     aspect-ratio: 16/9;
     display: flex;
     flex-direction: column;
@@ -411,7 +411,7 @@
     align-items: center;
     gap: 8px;
     padding: 8px 16px;
-    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
     color: white;
     border-radius: 20px;
     font-size: 13px;
@@ -476,8 +476,8 @@
 .btn-load-more {
     padding: 14px 32px;
     background: white;
-    border: 2px solid #2ecc71;
-    color: #2ecc71;
+    border: 2px solid #4a7c59;
+    color: #4a7c59;
     border-radius: 12px;
     font-weight: 600;
     cursor: pointer;
@@ -485,7 +485,7 @@
 }
 
 .btn-load-more:hover {
-    background: #2ecc71;
+    background: #4a7c59;
     color: white;
     transform: translateY(-2px);
 }
@@ -542,7 +542,7 @@
 .impact-number {
     font-size: 20px;
     font-weight: 700;
-    color: #2ecc71;
+    color: #4a7c59;
 }
 
 .impact-label {
@@ -574,7 +574,7 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4a7c59 0%, #3d6b4a 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -604,14 +604,14 @@
     background: #f8f9fa;
     border-radius: 20px;
     font-size: 13px;
-    color: #2ecc71;
+    color: #4a7c59;
     font-weight: 600;
     text-decoration: none;
     transition: all 0.3s ease;
 }
 
 .tag:hover {
-    background: #2ecc71;
+    background: #4a7c59;
     color: white;
     transform: translateY(-2px);
 }
