@@ -120,7 +120,7 @@ $grupos = [
                 <nav class="main-nav">
                     <a href="index.php" class="nav-link">Descubrir</a>
                     <a href="index.php#ranking" class="nav-link">Ranking</a>
-                    <a href="#mis-retos" class="nav-link">Mis Retos</a>
+                    <a href="mis-retos.php" class="nav-link">Mis Retos</a>
                     <a href="comunidad.php" class="nav-link active">Comunidad</a>
                 </nav>
                 <div class="header-actions">

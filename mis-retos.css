@@ -1,0 +1,635 @@
+/* ============================================
+   MIS RETOS - ESTILOS
+   ============================================ */
+
+/* Hero Section */
+.my-challenges-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 60px 0 40px;
+    color: white;
+    text-align: center;
+}
+
+.my-challenges-hero .page-title {
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.my-challenges-hero .page-subtitle {
+    font-size: 18px;
+    opacity: 0.95;
+}
+
+/* Estadísticas */
+.stats-section {
+    padding: 40px 0;
+    background: #f8f9fa;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.stat-icon {
+    font-size: 48px;
+    flex-shrink: 0;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+/* Tabs */
+.challenges-tabs {
+    display: flex;
+    gap: 12px;
+    margin: 40px 0 30px;
+    padding: 8px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 16px 24px;
+    border: none;
+    background: transparent;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    color: #7f8c8d;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+    background: #f8f9fa;
+    color: #2c3e50;
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+/* Contenido de Tabs */
+.tab-content {
+    display: none;
+    animation: fadeIn 0.5s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.section-description {
+    font-size: 16px;
+    color: #7f8c8d;
+}
+
+/* Retos en Progreso */
+.challenges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.challenge-card-progress {
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.challenge-card-progress:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border-color: #667eea;
+}
+
+.challenge-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.challenge-icon-large {
+    font-size: 56px;
+}
+
+.challenge-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge.in-progress {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    color: white;
+}
+
+.days-left {
+    font-size: 12px;
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+.challenge-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.challenge-description {
+    font-size: 14px;
+    color: #7f8c8d;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.progress-section {
+    margin-bottom: 20px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.progress-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #7f8c8d;
+}
+
+.progress-percentage {
+    font-size: 16px;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.progress-bar-large {
+    height: 12px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill-large {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+.tasks-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.tasks-icon {
+    font-size: 18px;
+    color: #2ecc71;
+}
+
+.tasks-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.challenge-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 2px solid #f8f9fa;
+}
+
+.points-reward {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    color: #f39c12;
+}
+
+.points-reward .points-icon {
+    font-size: 20px;
+}
+
+.btn-continue {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-continue:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* Retos Completados */
+.completed-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.completed-card {
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.completed-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.completed-badge {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    font-size: 48px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.completed-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.completed-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.completed-description {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-bottom: 20px;
+}
+
+.completed-stats {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.completed-stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.completed-stat .stat-icon {
+    font-size: 20px;
+}
+
+.completed-date {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #7f8c8d;
+    margin-bottom: 20px;
+}
+
+.date-icon {
+    font-size: 16px;
+}
+
+.completed-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-share,
+.btn-repeat {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-share {
+    background: #3498db;
+    color: white;
+}
+
+.btn-share:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+
+.btn-repeat {
+    background: #2ecc71;
+    color: white;
+}
+
+.btn-repeat:hover {
+    background: #27ae60;
+    transform: translateY(-2px);
+}
+
+/* Estado Vacío */
+.empty-state {
+    text-align: center;
+    padding: 80px 40px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.empty-icon {
+    font-size: 96px;
+    display: block;
+    margin-bottom: 24px;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 12px;
+}
+
+.empty-state p {
+    font-size: 16px;
+    color: #7f8c8d;
+    margin-bottom: 32px;
+}
+
+/* Descubrir Nuevos */
+.discover-redirect {
+    text-align: center;
+    padding: 80px 40px;
+    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    border-radius: 20px;
+    color: white;
+}
+
+.redirect-icon {
+    font-size: 96px;
+    margin-bottom: 24px;
+}
+
+.discover-redirect h3 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.discover-redirect p {
+    font-size: 18px;
+    opacity: 0.95;
+    margin-bottom: 32px;
+}
+
+.btn-primary-large {
+    display: inline-block;
+    padding: 16px 40px;
+    background: white;
+    color: #2ecc71;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary-large:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+/* Sección de Motivación */
+.motivation-section {
+    padding: 60px 0;
+    background: #f8f9fa;
+}
+
+.motivation-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 24px;
+    padding: 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+}
+
+.motivation-content {
+    flex: 1;
+}
+
+.motivation-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.motivation-text {
+    font-size: 18px;
+    opacity: 0.95;
+    margin-bottom: 24px;
+    max-width: 600px;
+}
+
+.next-goal {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+
+.goal-icon {
+    font-size: 28px;
+}
+
+.goal-text {
+    font-weight: 600;
+}
+
+.motivation-illustration {
+    font-size: 128px;
+}
+
+.illustration-badge {
+    display: block;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .challenges-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .my-challenges-hero .page-title {
+        font-size: 32px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .challenges-tabs {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .tab-btn {
+        padding: 12px 20px;
+    }
+    
+    .challenges-grid,
+    .completed-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .motivation-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 32px;
+    }
+    
+    .motivation-illustration {
+        font-size: 96px;
+        margin-top: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .challenge-card-progress {
+        padding: 20px;
+    }
+    
+    .challenge-icon-large {
+        font-size: 42px;
+    }
+    
+    .challenge-title {
+        font-size: 18px;
+    }
+    
+    .completed-badge {
+        font-size: 36px;
+    }
+    
+    .completed-icon {
+        font-size: 48px;
+    }
+}

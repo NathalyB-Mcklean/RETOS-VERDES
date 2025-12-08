@@ -85,8 +85,8 @@ $ranking = [
                 <nav class="main-nav">
                     <a href="#retos" class="nav-link active">Descubrir</a>
                     <a href="#ranking" class="nav-link">Ranking</a>
-                    <a href="#mis-retos" class="nav-link">Mis Retos</a>
-                    <a href="http://127.1.1.1/ReTOS-VERDES/comunidad.php" class="nav-link">Comunidad</a>
+                    <a href="mis-retos.php" class="nav-link">Mis Retos</a>
+                    <a href="comunidad.php" class="nav-link">Comunidad</a>
                 </nav>
                 <div class="header-actions">
                     <?php if ($user_logged_in): ?>
