@@ -24,134 +24,9 @@ $categorias = $retoModel->getCategorias();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Todos los Retos | Retos Verdes</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="retos.css">
     <link href="https://fonts.googleapis.com/css2?family=Clash+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        .retos-header {
-            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-            padding: 48px 0;
-            margin-top: 72px;
-        }
-        
-        .retos-header h1 {
-            font-size: 42px;
-            color: var(--primary-green);
-            margin-bottom: 16px;
-        }
-        
-        .retos-header p {
-            font-size: 18px;
-            color: var(--light-text);
-        }
-        
-        .filters-section {
-            padding: 32px 0;
-            background: white;
-            box-shadow: var(--shadow-sm);
-            position: sticky;
-            top: 72px;
-            z-index: 100;
-        }
-        
-        .filters-container {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .search-box {
-            flex: 1;
-            min-width: 300px;
-            position: relative;
-        }
-        
-        .search-box input {
-            width: 100%;
-            padding: 12px 16px 12px 44px;
-            border: 2px solid var(--bg-light);
-            border-radius: 12px;
-            font-size: 15px;
-            font-family: inherit;
-            transition: var(--transition);
-        }
-        
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary-green);
-        }
-        
-        .search-icon {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 20px;
-        }
-        
-        .filter-buttons {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .filter-btn-cat {
-            padding: 10px 20px;
-            border: 2px solid var(--bg-light);
-            background: white;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            color: var(--dark-text);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .filter-btn-cat:hover {
-            border-color: var(--light-green);
-            background: var(--bg-light);
-        }
-        
-        .filter-btn-cat.active {
-            background: var(--primary-green);
-            color: white;
-            border-color: var(--primary-green);
-        }
-        
-        .retos-count {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--dark-text);
-        }
-        
-        .retos-grid-section {
-            padding: 48px 0;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 80px 20px;
-        }
-        
-        .empty-state-icon {
-            font-size: 80px;
-            margin-bottom: 16px;
-        }
-        
-        .empty-state h3 {
-            font-size: 24px;
-            color: var(--dark-text);
-            margin-bottom: 8px;
-        }
-        
-        .empty-state p {
-            color: var(--light-text);
-            font-size: 16px;
-        }
-    </style>
+
 </head>
 <body>
     <!-- Header -->
@@ -180,12 +55,12 @@ $categorias = $retoModel->getCategorias();
                             <span><?php echo $usuario['avatar']; ?></span>
                         </a>
                         <a href="logout.php" class="btn-logout">
-                            <span class="btn-icon">🚪</span>
+                            <span class="btn-icon"></span>
                             <span>Cerrar Sesión</span>
                         </a>
                     <?php else: ?>
                         <a href="login.php" class="btn-login">
-                            <span class="btn-icon">🔐</span>
+                            <span class="btn-icon"></span>
                             <span>Iniciar Sesión</span>
                         </a>
                     <?php endif; ?>
