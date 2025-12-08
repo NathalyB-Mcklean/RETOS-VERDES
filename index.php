@@ -97,8 +97,9 @@ $ranking = [
                         <a href="profile.php" class="user-avatar">
                             <span><?php echo $user_avatar; ?></span>
                         </a>
+                        <a href="logout.php" class="btn-primary" style="background: #e74c3c; font-size: 14px; padding: 10px 20px;">Cerrar Sesión</a>
                     <?php else: ?>
-                        <a href="login.php" class="btn btn-primary">Iniciar Sesión</a>
+                        <a href="login.php" class="btn-primary">Iniciar Sesión</a>
                     <?php endif; ?>
                 </div>
             </div>
