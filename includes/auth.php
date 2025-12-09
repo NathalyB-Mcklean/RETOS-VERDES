@@ -4,14 +4,16 @@
  * Gestión de sesiones y usuarios
  */
 
-require_once __DIR__ . '/../config/database.php';
+// Cargar database solo si no existe
+if (!function_exists('getDB')) {
+    require_once __DIR__ . '/../config/database.php';
+}
 
-// Configurar sesión segura
-ini_set('session.cookie_httponly', 1);
-ini_set('session.use_only_cookies', 1);
-ini_set('session.cookie_secure', 0); // Cambiar a 1 en producción con HTTPS
-
+// Configurar sesión segura SOLO si la sesión no está activa
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.use_only_cookies', 1);
+    ini_set('session.cookie_secure', 0); // Cambiar a 1 en producción con HTTPS
     session_start();
 }
 

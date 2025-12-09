@@ -1,693 +1,196 @@
 <?php
-require_once 'config/database.php';
-require_once 'includes/auth.php';
-require_once 'models/Reto.php';
+session_start();
 
-// Verificar autenticación
-requiereLogin();
+// Verificar si el usuario está logueado
+$user_logged_in = isset($_SESSION['user_id']);
 
-$retoModel = new Reto();
-$usuario = getUsuario();
-$db = getDB();
+if (!$user_logged_in) {
+    $_SESSION['redirect_after_login'] = 'reto-detalle.php' . (isset($_GET['id']) ? '?id=' . $_GET['id'] : '');
+    header('Location: login.php');
+    exit();
+}
+
+// Datos del usuario
+$user_name = $_SESSION['user_name'];
+$user_points = $_SESSION['user_points'];
+$user_avatar = $_SESSION['user_avatar'];
 
 // Obtener ID del reto
 $reto_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-if (!$reto_id) {
+// Base de datos simulada de retos
+$retos_db = [
+    1 => [
+        'id' => 1,
+        'titulo' => 'Planta un Árbol Nativo',
+        'descripcion' => 'Contribuye a la reforestación plantando árboles nativos en tu comunidad. Cada árbol cuenta para restaurar nuestros bosques.',
+        'descripcion_larga' => 'Este reto tiene como objetivo aumentar la cobertura forestal en Panamá mediante la siembra de árboles nativos. Los árboles nativos son esenciales para mantener el equilibrio del ecosistema, proporcionan hábitat para la fauna local y ayudan a prevenir la erosión del suelo.',
+        'categoria' => 'arboles',
+        'puntos' => 100,
+        'fecha_inicio' => '2025-12-01',
+        'fecha_limite' => '2025-12-31',
+        'icono' => '🌳',
+        'progreso' => 60,
+        'participantes' => 234,
+        'impacto' => '450 árboles plantados',
+        'dificultad' => 'Media',
+        'duracion' => '30 días',
+        'tareas' => [
+            [
+                'id' => 1,
+                'titulo' => 'Identifica el área de plantación',
+                'descripcion' => 'Encuentra un espacio adecuado en tu comunidad',
+                'completada' => true,
+                'puntos' => 15
+            ],
+            [
+                'id' => 2,
+                'titulo' => 'Consigue semillas o plántulas nativas',
+                'descripcion' => 'Obtén especies como caoba, espavé o roble',
+                'completada' => true,
+                'puntos' => 20
+            ],
+            [
+                'id' => 3,
+                'titulo' => 'Prepara el terreno',
+                'descripcion' => 'Limpia y prepara el área de siembra',
+                'completada' => true,
+                'puntos' => 25
+            ],
+            [
+                'id' => 4,
+                'titulo' => 'Planta los árboles',
+                'descripcion' => 'Siembra al menos 3 árboles',
+                'completada' => false,
+                'puntos' => 30
+            ],
+            [
+                'id' => 5,
+                'titulo' => 'Documenta tu trabajo',
+                'descripcion' => 'Sube fotos del proceso',
+                'completada' => false,
+                'puntos' => 10
+            ]
+        ]
+    ],
+    2 => [
+        'id' => 2,
+        'titulo' => 'Limpieza de Quebrada',
+        'descripcion' => 'Limpia ríos y quebradas locales para proteger nuestras fuentes de agua',
+        'descripcion_larga' => 'Las quebradas y ríos son vitales para el suministro de agua potable y la biodiversidad acuática. Este reto busca eliminar residuos y contaminantes de estos cuerpos de agua.',
+        'categoria' => 'agua',
+        'puntos' => 150,
+        'fecha_inicio' => '2025-12-05',
+        'fecha_limite' => '2025-12-12',
+        'icono' => '💧',
+        'progreso' => 45,
+        'participantes' => 156,
+        'impacto' => '300 kg de residuos recolectados',
+        'dificultad' => 'Alta',
+        'duracion' => '7 días',
+        'tareas' => [
+            [
+                'id' => 1,
+                'titulo' => 'Forma un equipo',
+                'descripcion' => 'Reúne al menos 5 personas',
+                'completada' => true,
+                'puntos' => 25
+            ],
+            [
+                'id' => 2,
+                'titulo' => 'Organiza los materiales',
+                'descripcion' => 'Bolsas, guantes, ganchos recolectores',
+                'completada' => true,
+                'puntos' => 25
+            ],
+            [
+                'id' => 3,
+                'titulo' => 'Realiza la limpieza',
+                'descripcion' => 'Recolecta residuos de la quebrada',
+                'completada' => false,
+                'puntos' => 60
+            ],
+            [
+                'id' => 4,
+                'titulo' => 'Clasifica y reporta',
+                'descripcion' => 'Separa los residuos y documenta',
+                'completada' => false,
+                'puntos' => 40
+            ]
+        ]
+    ],
+    4 => [
+        'id' => 4,
+        'titulo' => 'Reduce el Plástico',
+        'descripcion' => 'Elimina plásticos de un solo uso de tu vida diaria',
+        'descripcion_larga' => 'Los plásticos de un solo uso son una de las principales fuentes de contaminación. Este reto te ayudará a adoptar alternativas sostenibles.',
+        'categoria' => 'residuos',
+        'puntos' => 50,
+        'fecha_inicio' => '2025-12-03',
+        'fecha_limite' => '2025-12-10',
+        'icono' => '♻️',
+        'progreso' => 30,
+        'participantes' => 412,
+        'impacto' => '2,500 plásticos evitados',
+        'dificultad' => 'Baja',
+        'duracion' => '7 días',
+        'tareas' => [
+            [
+                'id' => 1,
+                'titulo' => 'Identifica tus plásticos',
+                'descripcion' => 'Lista los plásticos que usas diariamente',
+                'completada' => true,
+                'puntos' => 10
+            ],
+            [
+                'id' => 2,
+                'titulo' => 'Encuentra alternativas',
+                'descripcion' => 'Bolsas reutilizables, botellas de agua',
+                'completada' => false,
+                'puntos' => 20
+            ],
+            [
+                'id' => 3,
+                'titulo' => 'Implementa los cambios',
+                'descripcion' => 'Usa alternativas por una semana',
+                'completada' => false,
+                'puntos' => 20
+            ]
+        ]
+    ]
+];
+
+// Verificar si el reto existe
+if (!isset($retos_db[$reto_id])) {
     header('Location: mis-retos.php');
-    exit;
+    exit();
 }
 
-// Verificar que el usuario esté participando
-if (!$retoModel->estaParticipando($usuario['id'], $reto_id)) {
-    header('Location: reto.php?id=' . $reto_id);
-    exit;
+$reto = $retos_db[$reto_id];
+
+// Calcular días restantes
+function diasRestantes($fecha_limite) {
+    $hoy = new DateTime();
+    $limite = new DateTime($fecha_limite);
+    $diff = $hoy->diff($limite);
+    return $diff->days;
 }
 
-// Obtener datos del reto y participación
-$reto = $retoModel->getRetoPorId($reto_id);
-$participacion = $retoModel->getParticipacion($usuario['id'], $reto_id);
+$dias_restantes = diasRestantes($reto['fecha_limite']);
 
-// Obtener reportes del usuario en este reto
-$stmt = $db->prepare("
-    SELECT * FROM reportes 
-    WHERE usuario_id = :usuario_id AND reto_id = :reto_id 
-    ORDER BY fecha_reporte DESC
-");
-$stmt->execute(['usuario_id' => $usuario['id'], 'reto_id' => $reto_id]);
-$mis_reportes = $stmt->fetchAll();
-
-// Definir pasos del reto según su categoría
-$pasos = definirPasosReto($reto, $participacion, $mis_reportes);
-
-// Calcular días activo en el reto
-$fecha_union = new DateTime($participacion['fecha_union']);
-$hoy = new DateTime();
-$dias_activo = $fecha_union->diff($hoy)->days;
-
-/**
- * Define los pasos necesarios para completar el reto
- */
-function definirPasosReto($reto, $participacion, $reportes) {
-    $pasos_base = [];
-    
-    // Paso 1: Siempre es unirse al reto
-    $pasos_base[] = [
-        'numero' => 1,
-        'titulo' => 'Unirse al Reto',
-        'descripcion' => 'Te has unido exitosamente a este reto',
-        'completado' => true,
-        'fecha_completado' => $participacion['fecha_union'],
-        'puntos' => 10,
-        'icono' => '✅'
-    ];
-    
-    // Pasos según categoría del reto
-    switch ($reto['categoria_slug']) {
-        case 'arboles':
-            $pasos_base[] = [
-                'numero' => 2,
-                'titulo' => 'Conseguir Semillas o Plántulas',
-                'descripcion' => 'Obtén semillas de árboles nativos o plántulas de un vivero',
-                'completado' => count($reportes) >= 1,
-                'puntos' => 20,
-                'icono' => '🌱',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=2'
-            ];
-            $pasos_base[] = [
-                'numero' => 3,
-                'titulo' => 'Preparar el Terreno',
-                'descripcion' => 'Identifica y prepara el lugar donde plantarás',
-                'completado' => count($reportes) >= 2,
-                'puntos' => 20,
-                'icono' => '🏞️',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=3'
-            ];
-            $pasos_base[] = [
-                'numero' => 4,
-                'titulo' => 'Plantar el Árbol',
-                'descripcion' => 'Planta el árbol y documenta con fotos',
-                'completado' => count($reportes) >= 3,
-                'puntos' => 30,
-                'icono' => '🌳',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=4'
-            ];
-            $pasos_base[] = [
-                'numero' => 5,
-                'titulo' => 'Seguimiento (30 días)',
-                'descripcion' => 'Documenta el crecimiento del árbol después de 30 días',
-                'completado' => count($reportes) >= 4,
-                'puntos' => 20,
-                'icono' => '📊',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=5'
-            ];
-            break;
-            
-        case 'agua':
-            $pasos_base[] = [
-                'numero' => 2,
-                'titulo' => 'Inspección del Área',
-                'descripcion' => 'Documenta el estado actual del río o quebrada',
-                'completado' => count($reportes) >= 1,
-                'puntos' => 25,
-                'icono' => '📸',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=2'
-            ];
-            $pasos_base[] = [
-                'numero' => 3,
-                'titulo' => 'Organizar Limpieza',
-                'descripcion' => 'Reúne un grupo y materiales (bolsas, guantes)',
-                'completado' => count($reportes) >= 2,
-                'puntos' => 25,
-                'icono' => '👥',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=3'
-            ];
-            $pasos_base[] = [
-                'numero' => 4,
-                'titulo' => 'Realizar Limpieza',
-                'descripcion' => 'Limpia el área y documenta la cantidad recolectada',
-                'completado' => count($reportes) >= 3,
-                'puntos' => 50,
-                'icono' => '♻️',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=4'
-            ];
-            $pasos_base[] = [
-                'numero' => 5,
-                'titulo' => 'Comparativa Final',
-                'descripcion' => 'Muestra fotos antes y después',
-                'completado' => count($reportes) >= 4,
-                'puntos' => 50,
-                'icono' => '🎯',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=5'
-            ];
-            break;
-            
-        case 'fauna':
-            $pasos_base[] = [
-                'numero' => 2,
-                'titulo' => 'Investigar Especies Locales',
-                'descripcion' => 'Identifica qué polinizadores hay en tu zona',
-                'completado' => count($reportes) >= 1,
-                'puntos' => 20,
-                'icono' => '🔍',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=2'
-            ];
-            $pasos_base[] = [
-                'numero' => 3,
-                'titulo' => 'Plantar Flores Nativas',
-                'descripcion' => 'Planta al menos 5 especies de flores que atraen polinizadores',
-                'completado' => count($reportes) >= 2,
-                'puntos' => 30,
-                'icono' => '🌺',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=3'
-            ];
-            $pasos_base[] = [
-                'numero' => 4,
-                'titulo' => 'Instalar Refugios',
-                'descripcion' => 'Crea casitas para abejas o bebederos para colibríes',
-                'completado' => count($reportes) >= 3,
-                'puntos' => 30,
-                'icono' => '🏠',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=4'
-            ];
-            break;
-            
-        case 'residuos':
-            $pasos_base[] = [
-                'numero' => 2,
-                'titulo' => 'Auditoría de Plásticos',
-                'descripcion' => 'Identifica todos los plásticos de un solo uso que usas',
-                'completado' => count($reportes) >= 1,
-                'puntos' => 15,
-                'icono' => '📋',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=2'
-            ];
-            $pasos_base[] = [
-                'numero' => 3,
-                'titulo' => 'Buscar Alternativas',
-                'descripcion' => 'Consigue alternativas reutilizables (bolsas, botellas, etc)',
-                'completado' => count($reportes) >= 2,
-                'puntos' => 20,
-                'icono' => '🛍️',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=3'
-            ];
-            $pasos_base[] = [
-                'numero' => 4,
-                'titulo' => 'Semana Sin Plástico',
-                'descripcion' => 'Documenta 7 días sin usar plásticos desechables',
-                'completado' => count($reportes) >= 3,
-                'puntos' => 40,
-                'icono' => '🎯',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=4'
-            ];
-            $pasos_base[] = [
-                'numero' => 5,
-                'titulo' => 'Inspirar a Otros',
-                'descripcion' => 'Comparte tu experiencia y motiva a 3 personas más',
-                'completado' => count($reportes) >= 4,
-                'puntos' => 25,
-                'icono' => '📣',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=5'
-            ];
-            break;
-            
-        case 'educacion':
-            $pasos_base[] = [
-                'numero' => 2,
-                'titulo' => 'Preparar Contenido',
-                'descripcion' => 'Crea material educativo sobre el tema ambiental',
-                'completado' => count($reportes) >= 1,
-                'puntos' => 30,
-                'icono' => '📚',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=2'
-            ];
-            $pasos_base[] = [
-                'numero' => 3,
-                'titulo' => 'Impartir Taller',
-                'descripcion' => 'Da un taller o charla a al menos 10 personas',
-                'completado' => count($reportes) >= 2,
-                'puntos' => 60,
-                'icono' => '🎓',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=3'
-            ];
-            $pasos_base[] = [
-                'numero' => 4,
-                'titulo' => 'Evaluación y Feedback',
-                'descripcion' => 'Recopila feedback de los participantes',
-                'completado' => count($reportes) >= 3,
-                'puntos' => 30,
-                'icono' => '📝',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=4'
-            ];
-            break;
-            
-        default:
-            // Pasos genéricos para otros retos
-            $pasos_base[] = [
-                'numero' => 2,
-                'titulo' => 'Planificar Acción',
-                'descripcion' => 'Planifica cómo vas a completar este reto',
-                'completado' => count($reportes) >= 1,
-                'puntos' => 20,
-                'icono' => '📝',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=2'
-            ];
-            $pasos_base[] = [
-                'numero' => 3,
-                'titulo' => 'Ejecutar Acción',
-                'descripcion' => 'Realiza la acción ambiental y documéntala',
-                'completado' => count($reportes) >= 2,
-                'puntos' => 50,
-                'icono' => '✨',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=3'
-            ];
-            $pasos_base[] = [
-                'numero' => 4,
-                'titulo' => 'Compartir Resultados',
-                'descripcion' => 'Comparte tu experiencia con la comunidad',
-                'completado' => count($reportes) >= 3,
-                'puntos' => 30,
-                'icono' => '📢',
-                'accion' => 'subir-reporte.php?id=' . $reto['id'] . '&paso=4'
-            ];
-    }
-    
-    return $pasos_base;
-}
-
-// Calcular progreso basado en pasos completados
-$pasos_completados = count(array_filter($pasos, fn($p) => $p['completado']));
-$total_pasos = count($pasos);
-$porcentaje_progreso = round(($pasos_completados / $total_pasos) * 100);
-
-// Calcular puntos ganados hasta ahora
-$puntos_ganados = array_sum(array_map(fn($p) => $p['completado'] ? $p['puntos'] : 0, $pasos));
-$puntos_totales = array_sum(array_map(fn($p) => $p['puntos'], $pasos));
+// Calcular tareas completadas
+$tareas_completadas = count(array_filter($reto['tareas'], function($t) { return $t['completada']; }));
+$tareas_totales = count($reto['tareas']);
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Progreso - <?php echo $reto['titulo']; ?></title>
+    <title><?php echo $reto['titulo']; ?> | Retos Verdes</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        .detalle-hero {
-            background: linear-gradient(135deg, <?php echo $reto['categoria_color']; ?>22 0%, <?php echo $reto['categoria_color']; ?>11 100%);
-            padding: 32px 0;
-            margin-top: 72px;
-        }
-        
-        .progreso-header {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 32px;
-            box-shadow: var(--shadow-md);
-            margin-bottom: 32px;
-        }
-        
-        .progreso-top {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-            margin-bottom: 24px;
-        }
-        
-        .progreso-icon {
-            font-size: 64px;
-            width: 100px;
-            height: 100px;
-            background: <?php echo $reto['categoria_color']; ?>22;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .progreso-info h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
-            color: var(--dark-text);
-        }
-        
-        .progreso-meta {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-        
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 14px;
-            color: var(--light-text);
-        }
-        
-        .progreso-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px;
-            padding: 24px;
-            background: var(--bg-light);
-            border-radius: 12px;
-        }
-        
-        .stat-item {
-            text-align: center;
-        }
-        
-        .stat-value {
-            display: block;
-            font-size: 32px;
-            font-weight: 700;
-            color: <?php echo $reto['categoria_color']; ?>;
-        }
-        
-        .stat-label {
-            font-size: 13px;
-            color: var(--light-text);
-        }
-        
-        .progreso-bar-container {
-            margin-top: 24px;
-        }
-        
-        .progreso-bar-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-        
-        .progreso-bar-label {
-            font-weight: 600;
-            color: var(--dark-text);
-        }
-        
-        .progreso-bar-percent {
-            font-weight: 700;
-            color: <?php echo $reto['categoria_color']; ?>;
-            font-size: 18px;
-        }
-        
-        .progreso-bar {
-            height: 16px;
-            background: var(--bg-light);
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .progreso-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, <?php echo $reto['categoria_color']; ?> 0%, <?php echo $reto['categoria_color']; ?>aa 100%);
-            width: <?php echo $porcentaje_progreso; ?>%;
-            transition: width 1s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .progreso-bar-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            animation: shimmer 2s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        
-        .pasos-container {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 32px;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .pasos-titulo {
-            font-size: 24px;
-            margin-bottom: 24px;
-            color: var(--dark-text);
-        }
-        
-        .paso-item {
-            display: flex;
-            gap: 20px;
-            padding: 24px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            background: var(--bg-light);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        
-        .paso-item:hover {
-            transform: translateX(4px);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .paso-item.completado {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            border: 2px solid #28a745;
-        }
-        
-        .paso-item.activo {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            border: 2px solid #ffc107;
-            box-shadow: 0 0 0 3px rgba(255,193,7,0.2);
-        }
-        
-        .paso-numero {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--light-text);
-            flex-shrink: 0;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .paso-item.completado .paso-numero {
-            background: #28a745;
-            color: white;
-        }
-        
-        .paso-item.activo .paso-numero {
-            background: #ffc107;
-            color: #856404;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        .paso-contenido {
-            flex: 1;
-        }
-        
-        .paso-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-        
-        .paso-icono {
-            font-size: 28px;
-        }
-        
-        .paso-titulo {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--dark-text);
-        }
-        
-        .paso-item.completado .paso-titulo {
-            color: #28a745;
-        }
-        
-        .paso-descripcion {
-            color: var(--light-text);
-            font-size: 14px;
-            line-height: 1.6;
-            margin-bottom: 12px;
-        }
-        
-        .paso-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .paso-puntos {
-            font-size: 14px;
-            font-weight: 600;
-            color: #ffc107;
-        }
-        
-        .paso-accion {
-            padding: 10px 20px;
-            background: <?php echo $reto['categoria_color']; ?>;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-        
-        .paso-accion:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .paso-item.completado .paso-accion {
-            background: #28a745;
-        }
-        
-        .paso-check {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            font-size: 32px;
-        }
-        
-        .reportes-seccion {
-            margin-top: 32px;
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 32px;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .reportes-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 16px;
-            margin-top: 16px;
-        }
-        
-        .reporte-mini {
-            border-radius: 12px;
-            overflow: hidden;
-            background: var(--bg-light);
-            transition: transform 0.3s ease;
-        }
-        
-        .reporte-mini:hover {
-            transform: scale(1.05);
-        }
-        
-        .reporte-mini-img {
-            width: 100%;
-            height: 140px;
-            background: linear-gradient(135deg, #e0e0e0, #f5f5f5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-        }
-        
-        .reporte-mini-info {
-            padding: 12px;
-        }
-        
-        .reporte-mini-fecha {
-            font-size: 12px;
-            color: var(--light-text);
-        }
-        
-        .reporte-mini-estado {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-top: 4px;
-        }
-        
-        .estado-pendiente {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .estado-aprobado {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .estado-rechazado {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        .alert-motivacion {
-            background: linear-gradient(135deg, #4a7c59 0%, #6fa182 100%);
-            color: white;
-            padding: 24px;
-            border-radius: 12px;
-            margin-top: 24px;
-            text-align: center;
-        }
-        
-        .alert-motivacion h3 {
-            font-size: 20px;
-            margin-bottom: 8px;
-        }
-        
-        .reto-completado-banner {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            padding: 32px;
-            border-radius: var(--border-radius);
-            text-align: center;
-            margin-bottom: 32px;
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .reto-completado-banner h2 {
-            font-size: 32px;
-            margin-bottom: 16px;
-        }
-        
-        .reto-completado-banner .puntos-ganados {
-            font-size: 48px;
-            font-weight: 700;
-            margin: 16px 0;
-        }
-        
-        @media (max-width: 768px) {
-            .progreso-top {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .progreso-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .paso-item {
-                flex-direction: column;
-            }
-            
-            .reportes-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="reto-detalle.css">
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Header -->
@@ -695,260 +198,486 @@ $puntos_totales = array_sum(array_map(fn($p) => $p['puntos'], $pasos));
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <a href="index.php" style="display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit;">
-                        <span class="logo-icon">🌱</span>
-                        <h1>RETOS VERDES</h1>
-                    </a>
+                    <span class="logo-icon">🌱</span>
+                    <h1>RETOS VERDES</h1>
                 </div>
                 <nav class="main-nav">
-                    <a href="index.php" class="nav-link">Inicio</a>
+                    <a href="index.php" class="nav-link">Descubrir</a>
+                    <a href="index.php#ranking" class="nav-link">Ranking</a>
                     <a href="mis-retos.php" class="nav-link active">Mis Retos</a>
+                    <a href="comunidad.php" class="nav-link">Comunidad</a>
                 </nav>
                 <div class="header-actions">
                     <div class="user-points">
                         <span class="points-icon">⭐</span>
-                        <span class="points-value"><?php echo number_format($usuario['puntos_totales']); ?></span>
+                        <span class="points-value"><?php echo number_format($user_points); ?></span>
                     </div>
-                    <a href="perfil.php" class="user-avatar">
-                        <span><?php echo $usuario['avatar']; ?></span>
+                    <a href="profile.php" class="user-avatar">
+                        <span><?php echo $user_avatar; ?></span>
                     </a>
+                    <a href="logout.php" class="btn-primary" style="background: #e74c3c; font-size: 14px; padding: 10px 20px;">Cerrar Sesión</a>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="detalle-hero">
+    <!-- Breadcrumb -->
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="index.php">Inicio</a>
+            <span class="separator">→</span>
+            <a href="mis-retos.php">Mis Retos</a>
+            <span class="separator">→</span>
+            <span class="current"><?php echo $reto['titulo']; ?></span>
+        </div>
+    </div>
+
+    <!-- Hero del Reto -->
+    <section class="challenge-detail-hero">
         <div class="container">
-            <?php if ($participacion['estado'] === 'completado'): ?>
-            <div class="reto-completado-banner">
-                <h2>🎉 ¡Felicidades! Reto Completado</h2>
-                <p>Has completado exitosamente este reto ambiental</p>
-                <div class="puntos-ganados">+<?php echo $reto['puntos_recompensa']; ?> puntos</div>
-                <p style="opacity: 0.9;">Completado el <?php echo formatearFecha($participacion['fecha_completado'], 'd/m/Y'); ?></p>
-            </div>
-            <?php endif; ?>
-            
-            <div class="progreso-header">
-                <div class="progreso-top">
-                    <div class="progreso-icon">
-                        <?php echo $reto['categoria_icono']; ?>
-                    </div>
-                    <div class="progreso-info">
-                        <h1><?php echo $reto['titulo']; ?></h1>
-                        <div class="progreso-meta">
-                            <span class="meta-item">
-                                📁 <?php echo $reto['categoria_nombre']; ?>
-                            </span>
-                            <span class="meta-item">
-                                📅 Te uniste hace <?php echo $dias_activo; ?> días
-                            </span>
-                            <span class="meta-item">
-                                <?php if ($participacion['estado'] === 'completado'): ?>
-                                    ✅ Completado
-                                <?php elseif ($participacion['estado'] === 'en_progreso'): ?>
-                                    ⏳ En progreso
-                                <?php endif; ?>
-                            </span>
+            <div class="hero-content-detail">
+                <div class="hero-left">
+                    <div class="challenge-icon-hero"><?php echo $reto['icono']; ?></div>
+                    <div class="hero-text">
+                        <h1 class="challenge-title-hero"><?php echo $reto['titulo']; ?></h1>
+                        <p class="challenge-subtitle"><?php echo $reto['descripcion']; ?></p>
+                        
+                        <div class="challenge-meta">
+                            <div class="meta-item">
+                                <span class="meta-icon">👥</span>
+                                <span><?php echo $reto['participantes']; ?> participantes</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-icon">📊</span>
+                                <span><?php echo $reto['dificultad']; ?></span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-icon">⏱️</span>
+                                <span><?php echo $reto['duracion']; ?></span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-icon">🌍</span>
+                                <span><?php echo $reto['impacto']; ?></span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="progreso-stats">
-                    <div class="stat-item">
-                        <span class="stat-label">Puntos</span>
-                    </div>
-                </div>
-                
-                <div class="progreso-bar-container">
-                    <div class="progreso-bar-header">
-                        <span class="progreso-bar-label">Tu Progreso</span>
-                        <span class="progreso-bar-percent"><?php echo $porcentaje_progreso; ?>%</span>
-                    </div>
-                    <div class="progreso-bar">
-                        <div class="progreso-bar-fill"></div>
+                <div class="hero-right">
+                    <div class="progress-card-hero">
+                        <div class="progress-header-hero">
+                            <h3>Tu Progreso</h3>
+                            <span class="progress-percent"><?php echo $reto['progreso']; ?>%</span>
+                        </div>
+                        <div class="progress-bar-hero">
+                            <div class="progress-fill-hero" style="width: <?php echo $reto['progreso']; ?>%"></div>
+                        </div>
+                        <div class="progress-stats">
+                            <div class="stat">
+                                <span class="stat-label">Tareas</span>
+                                <span class="stat-value"><?php echo $tareas_completadas; ?>/<?php echo $tareas_totales; ?></span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Días restantes</span>
+                                <span class="stat-value <?php echo $dias_restantes <= 3 ? 'urgent' : ''; ?>"><?php echo $dias_restantes; ?></span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-label">Puntos</span>
+                                <span class="stat-value">⭐ <?php echo $reto['puntos']; ?></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Pasos del Reto -->
-    <section style="padding: 48px 0;">
-        <div class="container">
-            <div class="pasos-container">
-                <h2 class="pasos-titulo">📋 Pasos para Completar el Reto</h2>
-                
-                <?php foreach ($pasos as $index => $paso): ?>
-                    <?php 
-                    $es_siguiente = !$paso['completado'] && ($index === 0 || $pasos[$index-1]['completado']);
-                    $clase_paso = '';
-                    if ($paso['completado']) {
-                        $clase_paso = 'completado';
-                    } elseif ($es_siguiente) {
-                        $clase_paso = 'activo';
-                    }
-                    ?>
-                    <div class="paso-item <?php echo $clase_paso; ?>">
-                        <div class="paso-numero">
-                            <?php echo $paso['completado'] ? '✓' : $paso['numero']; ?>
-                        </div>
-                        
-                        <div class="paso-contenido">
-                            <div class="paso-header">
-                                <span class="paso-icono"><?php echo $paso['icono']; ?></span>
-                                <h3 class="paso-titulo"><?php echo $paso['titulo']; ?></h3>
-                            </div>
-                            
-                            <p class="paso-descripcion"><?php echo $paso['descripcion']; ?></p>
-                            
-                            <div class="paso-footer">
-                                <span class="paso-puntos">⭐ +<?php echo $paso['puntos']; ?> puntos</span>
+    <!-- Contenido Principal -->
+    <div class="container">
+        <div class="detail-layout">
+            <!-- Columna Principal -->
+            <div class="main-column">
+                <!-- Descripción Detallada -->
+                <section class="detail-section">
+                    <h2 class="section-title-detail">Acerca de este reto</h2>
+                    <p class="detail-description"><?php echo $reto['descripcion_larga']; ?></p>
+                </section>
+
+                <!-- Lista de Tareas -->
+                <section class="detail-section">
+                    <h2 class="section-title-detail">Tareas del Reto</h2>
+                    <p class="section-subtitle">Completa todas las tareas para ganar los puntos del reto</p>
+                    
+                    <div class="tasks-list">
+                        <?php foreach ($reto['tareas'] as $index => $tarea): ?>
+                        <div class="task-item <?php echo $tarea['completada'] ? 'completed' : ''; ?>">
+                            <div class="task-number"><?php echo $index + 1; ?></div>
+                            <div class="task-content">
+                                <div class="task-header">
+                                    <h4 class="task-title"><?php echo $tarea['titulo']; ?></h4>
+                                    <div class="task-points">+<?php echo $tarea['puntos']; ?> pts</div>
+                                </div>
+                                <p class="task-description"><?php echo $tarea['descripcion']; ?></p>
                                 
-                                <?php if ($paso['completado']): ?>
-                                    <span style="color: #28a745; font-weight: 600; font-size: 14px;">
-                                        ✓ Completado
-                                        <?php if (isset($paso['fecha_completado'])): ?>
-                                            - <?php echo formatearFecha($paso['fecha_completado'], 'd/m/Y'); ?>
-                                        <?php endif; ?>
-                                    </span>
-                                <?php elseif ($es_siguiente): ?>
-                                    <a href="<?php echo $paso['accion']; ?>" class="paso-accion">
-                                        Continuar →
-                                    </a>
+                                <?php if ($tarea['completada']): ?>
+                                    <div class="task-status completed-status">
+                                        <span class="status-icon">✓</span>
+                                        <span>Completada</span>
+                                    </div>
                                 <?php else: ?>
-                                    <span style="color: var(--light-text); font-size: 14px;">
-                                        🔒 Completa los pasos anteriores
-                                    </span>
+                                    <button class="btn-complete-task" data-task-id="<?php echo $tarea['id']; ?>" data-reto-id="<?php echo $reto['id']; ?>">
+                                        Marcar como completada
+                                    </button>
                                 <?php endif; ?>
                             </div>
                         </div>
-                        
-                        <?php if ($paso['completado']): ?>
-                            <span class="paso-check">✅</span>
-                        <?php endif; ?>
+                        <?php endforeach; ?>
                     </div>
-                <?php endforeach; ?>
-                
-                <?php if ($participacion['estado'] !== 'completado'): ?>
-                    <div class="alert-motivacion">
-                        <h3>💪 ¡Sigue Adelante!</h3>
-                        <p>Completa todos los pasos para ganar <?php echo $reto['puntos_recompensa']; ?> puntos y hacer la diferencia en tu comunidad</p>
-                    </div>
-                <?php endif; ?>
+                </section>
             </div>
-            
-            <!-- Mis Reportes -->
-            <?php if (count($mis_reportes) > 0): ?>
-            <div class="reportes-seccion">
-                <h2 style="font-size: 24px; margin-bottom: 16px;">📸 Tus Reportes</h2>
-                <p style="color: var(--light-text); margin-bottom: 24px;">
-                    Has enviado <?php echo count($mis_reportes); ?> reporte(s) en este reto
-                </p>
-                
-                <div class="reportes-grid">
-                    <?php foreach ($mis_reportes as $reporte): ?>
-                    <div class="reporte-mini">
-                        <div class="reporte-mini-img">
-                            <?php if ($reporte['imagen_url']): ?>
-                                <img src="<?php echo $reporte['imagen_url']; ?>" alt="Reporte" style="width: 100%; height: 100%; object-fit: cover;">
-                            <?php else: ?>
-                                📷
-                            <?php endif; ?>
+
+            <!-- Sidebar -->
+            <div class="sidebar-column">
+                <!-- Recompensas -->
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">🏆 Recompensas</h3>
+                    <div class="rewards-list">
+                        <div class="reward-item">
+                            <span class="reward-icon">⭐</span>
+                            <span class="reward-text"><?php echo $reto['puntos']; ?> Puntos</span>
                         </div>
-                        <div class="reporte-mini-info">
-                            <div class="reporte-mini-fecha">
-                                <?php echo formatearFecha($reporte['fecha_reporte'], 'd/m/Y'); ?>
-                            </div>
-                            <span class="reporte-mini-estado estado-<?php echo $reporte['estado']; ?>">
-                                <?php 
-                                $estados = [
-                                    'pendiente' => '⏳ Pendiente',
-                                    'aprobado' => '✅ Aprobado',
-                                    'rechazado' => '❌ Rechazado'
-                                ];
-                                echo $estados[$reporte['estado']];
-                                ?>
-                            </span>
+                        <div class="reward-item">
+                            <span class="reward-icon">🏅</span>
+                            <span class="reward-text">Insignia de <?php echo $reto['categoria']; ?></span>
+                        </div>
+                        <div class="reward-item">
+                            <span class="reward-icon">📊</span>
+                            <span class="reward-text">Estadísticas actualizadas</span>
                         </div>
                     </div>
-                    <?php endforeach; ?>
                 </div>
-            </div>
-            <?php endif; ?>
-            
-            <!-- Botones de Acción -->
-            <div style="display: flex; gap: 16px; margin-top: 32px; justify-content: center;">
-                <a href="mis-retos.php" class="btn btn-challenge" style="padding: 14px 28px;">
-                    ← Volver a Mis Retos
-                </a>
-                
-                <?php if ($participacion['estado'] !== 'completado'): ?>
-                    <?php 
-                    // Encontrar el siguiente paso activo
-                    $siguiente_paso = null;
-                    foreach ($pasos as $index => $paso) {
-                        if (!$paso['completado'] && ($index === 0 || $pasos[$index-1]['completado'])) {
-                            $siguiente_paso = $paso;
-                            break;
-                        }
-                    }
-                    ?>
-                    <?php if ($siguiente_paso && isset($siguiente_paso['accion'])): ?>
-                    <a href="<?php echo $siguiente_paso['accion']; ?>" class="btn btn-primary" style="padding: 14px 28px;">
-                        Continuar Reto →
-                    </a>
-                    <?php endif; ?>
-                <?php else: ?>
-                    <a href="index.php" class="btn btn-primary" style="padding: 14px 28px;">
-                        Explorar Más Retos
-                    </a>
-                <?php endif; ?>
+
+                <!-- Tiempo Restante -->
+                <div class="sidebar-card <?php echo $dias_restantes <= 3 ? 'urgent-card' : ''; ?>">
+                    <h3 class="sidebar-title">⏰ Tiempo Restante</h3>
+                    <div class="time-remaining">
+                        <span class="time-number"><?php echo $dias_restantes; ?></span>
+                        <span class="time-label">días</span>
+                    </div>
+                    <p class="time-description">Fecha límite: <?php echo date('d/m/Y', strtotime($reto['fecha_limite'])); ?></p>
+                </div>
+
+                <!-- Impacto -->
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">🌍 Impacto Colectivo</h3>
+                    <p class="impact-text"><?php echo $reto['impacto']; ?></p>
+                    <p class="impact-description">Gracias a <?php echo $reto['participantes']; ?> participantes</p>
+                </div>
+
+                <!-- Botón Abandonar -->
+                <button class="btn-abandon" data-reto-id="<?php echo $reto['id']; ?>">
+                    Abandonar reto
+                </button>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Retos Verdes Comunitarios</h4>
+                    <p>Transformando comunidades panameñas a través de la acción ambiental</p>
+                </div>
+                <div class="footer-section">
+                    <h5>Enlaces</h5>
+                    <a href="#sobre">Sobre Nosotros</a>
+                    <a href="#como-funciona">Cómo Funciona</a>
+                    <a href="#contacto">Contacto</a>
+                </div>
+                <div class="footer-section">
+                    <h5>Legal</h5>
+                    <a href="#privacidad">Privacidad</a>
+                    <a href="#terminos">Términos</a>
+                </div>
+            </div>
             <div class="footer-bottom">
                 <p>&copy; 2025 Retos Verdes Comunitarios - Panamá 🇵🇦</p>
             </div>
         </div>
     </footer>
-    
+
+    <script src="script.js"></script>
     <script>
-        // Animación de la barra de progreso al cargar
-        window.addEventListener('load', function() {
-            setTimeout(() => {
-                const fill = document.querySelector('.progreso-bar-fill');
-                if (fill) {
-                    fill.style.width = '<?php echo $porcentaje_progreso; ?>%';
+    // ============================================
+    // RETO DETALLE - JAVASCRIPT
+    // ============================================
+
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // Botones de completar tarea
+        const completeButtons = document.querySelectorAll('.btn-complete-task');
+        
+        completeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const taskId = this.getAttribute('data-task-id');
+                const retoId = this.getAttribute('data-reto-id');
+                const taskItem = this.closest('.task-item');
+                
+                // Mostrar confirmación
+                const confirmar = confirm('¿Has completado esta tarea?');
+                
+                if (confirmar) {
+                    // Marcar como completada
+                    taskItem.classList.add('completed');
+                    
+                    // Reemplazar botón con estado completado
+                    this.outerHTML = `
+                        <div class="task-status completed-status">
+                            <span class="status-icon">✓</span>
+                            <span>Completada</span>
+                        </div>
+                    `;
+                    
+                    // Mostrar notificación
+                    showNotification('¡Tarea completada! +' + this.closest('.task-content').querySelector('.task-points').textContent, 'success');
+                    
+                    // Actualizar progreso
+                    actualizarProgreso();
+                    
+                    // Aquí puedes hacer una petición AJAX para guardar en la base de datos
+                    // guardarTareaCompletada(retoId, taskId);
                 }
-            }, 100);
+            });
         });
         
-        // Confetti si el reto está completado
-        <?php if ($participacion['estado'] === 'completado'): ?>
-        function lanzarConfetti() {
-            // Aquí podrías integrar una librería de confetti
-            console.log('🎉 ¡Reto completado!');
+        // Botón abandonar reto
+        const abandonButton = document.querySelector('.btn-abandon');
+        
+        if (abandonButton) {
+            abandonButton.addEventListener('click', function() {
+                const retoId = this.getAttribute('data-reto-id');
+                
+                const confirmar = confirm('¿Estás seguro de que quieres abandonar este reto? Perderás todo tu progreso.');
+                
+                if (confirmar) {
+                    showNotification('Has abandonado el reto', 'info');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'mis-retos.php';
+                    }, 1500);
+                    
+                    // Aquí puedes hacer una petición AJAX para actualizar la base de datos
+                    // abandonarReto(retoId);
+                }
+            });
         }
-        lanzarConfetti();
-        <?php endif; ?>
+        
+        // Animar barra de progreso al cargar
+        setTimeout(() => {
+            const progressBar = document.querySelector('.progress-fill-hero');
+            if (progressBar) {
+                const width = progressBar.style.width;
+                progressBar.style.width = '0%';
+                setTimeout(() => {
+                    progressBar.style.width = width;
+                }, 100);
+            }
+        }, 300);
+        
+    });
+
+    // ============================================
+    // FUNCIONES AUXILIARES
+    // ============================================
+
+    function actualizarProgreso() {
+        const totalTareas = document.querySelectorAll('.task-item').length;
+        const tareasCompletadas = document.querySelectorAll('.task-item.completed').length;
+        const porcentaje = Math.round((tareasCompletadas / totalTareas) * 100);
+        
+        // Actualizar barra de progreso
+        const progressBar = document.querySelector('.progress-fill-hero');
+        const progressPercent = document.querySelector('.progress-percent');
+        const statValue = document.querySelector('.progress-stats .stat:first-child .stat-value');
+        
+        if (progressBar) {
+            progressBar.style.width = porcentaje + '%';
+        }
+        
+        if (progressPercent) {
+            progressPercent.textContent = porcentaje + '%';
+        }
+        
+        if (statValue) {
+            statValue.textContent = tareasCompletadas + '/' + totalTareas;
+        }
+        
+        // Si se completaron todas las tareas
+        if (tareasCompletadas === totalTareas) {
+            setTimeout(() => {
+                mostrarRetoCompletado();
+            }, 1000);
+        }
+    }
+
+    function mostrarRetoCompletado() {
+        const modal = document.createElement('div');
+        modal.className = 'completion-modal';
+        modal.innerHTML = `
+            <div class="completion-content">
+                <div class="completion-icon">🎉</div>
+                <h2>¡Reto Completado!</h2>
+                <p>Has completado todas las tareas de este reto</p>
+                <div class="completion-rewards">
+                    <div class="reward">⭐ +100 Puntos</div>
+                    <div class="reward">🏅 Nueva Insignia</div>
+                </div>
+                <button class="btn-finish" onclick="window.location.href='mis-retos.php?tab=completados'">
+                    Ver Mis Logros
+                </button>
+            </div>
+        `;
+        
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        `;
+        
+        document.body.appendChild(modal);
+    }
+
+    function showNotification(mensaje, tipo = 'success') {
+        const notification = document.createElement('div');
+        notification.className = 'custom-notification';
+        
+        const icon = tipo === 'success' ? '✓' : 'ℹ';
+        const bgColor = tipo === 'success' 
+            ? 'linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)'
+            : 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)';
+        
+        notification.innerHTML = `
+            <span class="notification-icon">${icon}</span>
+            <span class="notification-text">${mensaje}</span>
+        `;
+        
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${bgColor};
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            animation: slideInRight 0.3s ease;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    // Animaciones CSS
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = `
+        @keyframes slideInRight {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .completion-content {
+            background: white;
+            padding: 48px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 500px;
+            animation: scaleIn 0.3s ease;
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .completion-icon {
+            font-size: 96px;
+            margin-bottom: 24px;
+        }
+        
+        .completion-content h2 {
+            font-size: 32px;
+            color: #2c3e50;
+            margin-bottom: 12px;
+        }
+        
+        .completion-content p {
+            color: #7f8c8d;
+            margin-bottom: 32px;
+            font-size: 16px;
+        }
+        
+        .completion-rewards {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+        
+        .completion-rewards .reward {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        .btn-finish {
+            padding: 16px 40px;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-finish:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(46, 204, 113, 0.3);
+        }
+    `;
+    document.head.appendChild(styleSheet);
     </script>
 </body>
-</html>-value"><?php echo $porcentaje_progreso; ?>%</span>
-                        <span class="stat-label">Completado</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value"><?php echo $pasos_completados; ?>/<?php echo $total_pasos; ?></span>
-                        <span class="stat-label">Pasos</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value"><?php echo count($mis_reportes); ?></span>
-                        <span class="stat-label">Reportes</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value"><?php echo $puntos_ganados; ?>/<?php echo $puntos_totales; ?></span>
-                        <span class="stat
+</html>

@@ -26,7 +26,7 @@ $publicaciones = [
         'usuario' => 'Carlos Ruiz',
         'avatar' => '👨',
         'tiempo' => 'Hace 5 horas',
-        'contenido' => 'Terminamos la limpieza de la Quebrada Juan Díaz. Recolectamos más de 200kg de residuos. ¡Sigamos así Panamá! 💪',
+        'contenido' => 'Terminamos la limpieza en la playa de Veracruz. Recolectamos más de 200kg de residuos. ¡Sigamos así Panamá! 💪',
         'imagen' => 'https://images.unsplash.com/photo-1618477461853-cf6ed80faba5?w=800&q=80',
         'reto' => 'Limpieza de Quebrada',
         'likes' => 98,

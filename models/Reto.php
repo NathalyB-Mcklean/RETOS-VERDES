@@ -4,7 +4,10 @@
  * Gestión de retos ambientales
  */
 
-require_once __DIR__ . '/../config/database.php';
+// Solo cargar database.php si la función getDB no existe
+if (!function_exists('getDB')) {
+    require_once __DIR__ . '/../config/database.php';
+}
 
 class Reto {
     private $db;
@@ -19,7 +22,7 @@ class Reto {
     public function getRetos($categoria = 'todos', $busqueda = '') {
         try {
             $sql = "SELECT r.*, c.nombre as categoria_nombre, c.icono as categoria_icono,
-                           c.color as categoria_color, c.slug as categoria_slug,
+                           c.color as categoria_color, c.slug as categoria_slug, c.id as categoria_id,
                            (SELECT COUNT(*) FROM participaciones WHERE reto_id = r.id) as participantes_actuales,
                            (SELECT COUNT(*) FROM reportes WHERE reto_id = r.id AND estado = 'aprobado') as reportes_aprobados,
                            ROUND((SELECT COUNT(*) FROM participaciones WHERE reto_id = r.id) / 
@@ -123,7 +126,7 @@ class Reto {
     public function getRetoPorId($id) {
         try {
             $sql = "SELECT r.*, c.nombre as categoria_nombre, c.icono as categoria_icono,
-                           c.slug as categoria_slug, c.color as categoria_color,
+                           c.slug as categoria_slug, c.color as categoria_color, c.id as categoria_id,
                            (SELECT COUNT(*) FROM participaciones WHERE reto_id = r.id) as participantes_actuales,
                            (SELECT COUNT(*) FROM reportes WHERE reto_id = r.id AND estado = 'aprobado') as reportes_aprobados
                     FROM retos r
@@ -419,16 +422,21 @@ class Reto {
     }
     
     private function crearNotificacion($usuario_id, $titulo, $mensaje, $tipo, $url = null) {
-        $sql = "INSERT INTO notificaciones (usuario_id, titulo, mensaje, tipo, url)
-                VALUES (:usuario_id, :titulo, :mensaje, :tipo, :url)";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([
-            'usuario_id' => $usuario_id,
-            'titulo' => $titulo,
-            'mensaje' => $mensaje,
-            'tipo' => $tipo,
-            'url' => $url
-        ]);
+        try {
+            $sql = "INSERT INTO notificaciones (usuario_id, titulo, mensaje, tipo, url)
+                    VALUES (:usuario_id, :titulo, :mensaje, :tipo, :url)";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([
+                'usuario_id' => $usuario_id,
+                'titulo' => $titulo,
+                'mensaje' => $mensaje,
+                'tipo' => $tipo,
+                'url' => $url
+            ]);
+        } catch(PDOException $e) {
+            // Solo registrar el error, no detener la ejecución
+            error_log("Error al crear notificación: " . $e->getMessage());
+        }
     }
 }

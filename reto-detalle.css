@@ -1,0 +1,535 @@
+/* ============================================
+   RETO DETALLE - ESTILOS
+   ============================================ */
+
+/* Breadcrumb */
+.breadcrumb {
+    padding: 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+}
+
+.breadcrumb a {
+    color: #7f8c8d;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb a:hover {
+    color: #4a7c59;
+}
+
+.breadcrumb .separator {
+    color: #bdc3c7;
+}
+
+.breadcrumb .current {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+/* Hero del Reto */
+.challenge-detail-hero {
+    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    padding: 60px 0;
+    color: white;
+}
+
+.hero-content-detail {
+    display: flex;
+    gap: 48px;
+    align-items: flex-start;
+}
+
+.hero-left {
+    flex: 1;
+    display: flex;
+    gap: 32px;
+}
+
+.challenge-icon-hero {
+    font-size: 120px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
+}
+
+.hero-text {
+    flex: 1;
+}
+
+.challenge-title-hero {
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    line-height: 1.2;
+}
+
+.challenge-subtitle {
+    font-size: 20px;
+    margin-bottom: 32px;
+    opacity: 0.95;
+}
+
+.challenge-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.meta-icon {
+    font-size: 20px;
+}
+
+/* Tarjeta de Progreso Hero */
+.hero-right {
+    width: 380px;
+    flex-shrink: 0;
+}
+
+.progress-card-hero {
+    background: white;
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+.progress-header-hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.progress-header-hero h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.progress-percent {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2ecc71;
+}
+
+.progress-bar-hero {
+    height: 16px;
+    background: #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.progress-fill-hero {
+    height: 100%;
+    background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%);
+    border-radius: 12px;
+    transition: width 0.5s ease;
+}
+
+.progress-stats {
+    display: flex;
+    gap: 24px;
+}
+
+.progress-stats .stat {
+    flex: 1;
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 12px;
+    color: #7f8c8d;
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.stat-value.urgent {
+    color: #e74c3c;
+}
+
+/* Layout Principal */
+.detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 40px;
+    padding: 60px 0;
+}
+
+/* Columna Principal */
+.main-column {
+    min-width: 0;
+}
+
+.detail-section {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 32px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.section-title-detail {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 16px;
+}
+
+.section-subtitle {
+    font-size: 15px;
+    color: #7f8c8d;
+    margin-bottom: 32px;
+}
+
+.detail-description {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #555;
+}
+
+/* Lista de Tareas */
+.tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.task-item {
+    display: flex;
+    gap: 20px;
+    padding: 24px;
+    background: #f8f9fa;
+    border-radius: 16px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.task-item:hover {
+    border-color: #2ecc71;
+    background: white;
+}
+
+.task-item.completed {
+    background: linear-gradient(135deg, rgba(46, 204, 113, 0.1) 0%, rgba(39, 174, 96, 0.1) 100%);
+    border-color: #2ecc71;
+}
+
+.task-number {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.task-item.completed .task-number {
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+}
+
+.task-content {
+    flex: 1;
+}
+
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.task-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.task-points {
+    padding: 4px 12px;
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    color: white;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.task-description {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.btn-complete-task {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-complete-task:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(46, 204, 113, 0.3);
+}
+
+.task-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.completed-status {
+    background: rgba(46, 204, 113, 0.15);
+    color: #27ae60;
+}
+
+.status-icon {
+    font-size: 18px;
+}
+
+/* Sidebar */
+.sidebar-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.sidebar-card {
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.sidebar-card.urgent-card {
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(192, 57, 43, 0.1) 100%);
+    border: 2px solid #e74c3c;
+}
+
+.sidebar-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+/* Recompensas */
+.rewards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.reward-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.reward-icon {
+    font-size: 24px;
+}
+
+.reward-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Tiempo Restante */
+.time-remaining {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.time-number {
+    font-size: 64px;
+    font-weight: 700;
+    color: #2ecc71;
+}
+
+.urgent-card .time-number {
+    color: #e74c3c;
+}
+
+.time-label {
+    font-size: 20px;
+    font-weight: 600;
+    color: #7f8c8d;
+}
+
+.time-description {
+    text-align: center;
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+/* Impacto */
+.impact-text {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2ecc71;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.impact-description {
+    text-align: center;
+    font-size: 13px;
+    color: #7f8c8d;
+}
+
+/* Botón Abandonar */
+.btn-abandon {
+    width: 100%;
+    padding: 14px 24px;
+    background: transparent;
+    color: #e74c3c;
+    border: 2px solid #e74c3c;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-abandon:hover {
+    background: #e74c3c;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1200px) {
+    .hero-content-detail {
+        flex-direction: column;
+    }
+    
+    .hero-right {
+        width: 100%;
+    }
+    
+    .detail-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar-column {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .challenge-title-hero {
+        font-size: 32px;
+    }
+    
+    .challenge-subtitle {
+        font-size: 16px;
+    }
+    
+    .challenge-icon-hero {
+        font-size: 80px;
+    }
+    
+    .hero-left {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .challenge-meta {
+        gap: 16px;
+    }
+    
+    .progress-card-hero {
+        padding: 24px;
+    }
+    
+    .progress-percent {
+        font-size: 24px;
+    }
+    
+    .detail-section {
+        padding: 24px;
+    }
+    
+    .section-title-detail {
+        font-size: 24px;
+    }
+    
+    .task-item {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .sidebar-column {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .challenge-title-hero {
+        font-size: 24px;
+    }
+    
+    .challenge-icon-hero {
+        font-size: 64px;
+    }
+    
+    .progress-stats {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .task-header {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .task-points {
+        align-self: flex-start;
+    }
+}
