@@ -25,6 +25,7 @@ $categorias = $retoModel->getCategorias();
     <title>Todos los Retos | Retos Verdes</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="retos.css">
+    <link rel="stylesheet" href="reto-detalle.css">
     <link href="https://fonts.googleapis.com/css2?family=Clash+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 </head>
@@ -154,7 +155,7 @@ $categorias = $retoModel->getCategorias();
                                 <?php echo $reto['puntos_recompensa']; ?> pts
                             </span>
                         </div>
-                        <a href="retos.php?id=<?php echo $reto['id']; ?>" class="btn btn-challenge">Ver Reto</a>
+                        <a href="reto-detalle.php?id=<?php echo $reto['id']; ?>" class="btn btn-challenge">Ver Reto</a>
                     </div>
                 </div>
                 <?php endforeach; ?>
