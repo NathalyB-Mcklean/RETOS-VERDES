@@ -394,6 +394,122 @@ class Reto {
             return ['success' => false, 'message' => 'Error al completar el reto'];
         }
     }
+
+    // ========== MÉTODOS NUEVOS QUE NECESITAS AGREGAR ==========
+    // Agrega estos métodos al final de tu clase Reto, justo antes del cierre }
+    
+    /**
+     * Crear reporte (nuevo método específico para el flujo de reportes)
+     */
+    public function crearReporte($data) {
+        try {
+            $sql = "INSERT INTO reportes (participacion_id, usuario_id, reto_id, descripcion, imagen_url, fecha_accion, fecha_reporte, estado) 
+                    VALUES (:participacion_id, :usuario_id, :reto_id, :descripcion, :imagen_url, :fecha_accion, NOW(), 'pendiente')";
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute([
+                'participacion_id' => $data['participacion_id'],
+                'usuario_id' => $data['usuario_id'],
+                'reto_id' => $data['reto_id'],
+                'descripcion' => $data['descripcion'],
+                'imagen_url' => $data['imagen_url'],
+                'fecha_accion' => $data['fecha_accion']
+            ]);
+        } catch (Exception $e) {
+            error_log("Error al crear reporte: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Actualizar progreso de participación (método específico)
+     */
+    public function actualizarProgresoParticipacion($participacion_id, $progreso) {
+        try {
+            $sql = "UPDATE participaciones SET progreso = :progreso WHERE id = :id";
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute(['progreso' => $progreso, 'id' => $participacion_id]);
+        } catch (Exception $e) {
+            error_log("Error al actualizar progreso: " . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Completar participación (alias para completarReto)
+     */
+    public function completarParticipacion($participacion_id, $reto_id, $usuario_id) {
+        return $this->completarReto($participacion_id, $usuario_id, $reto_id);
+    }
+    
+    /**
+     * Obtener reportes por participación
+     */
+    public function getReportesPorParticipacion($participacion_id) {
+        try {
+            $sql = "SELECT * FROM reportes WHERE participacion_id = :participacion_id ORDER BY fecha_reporte DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['participacion_id' => $participacion_id]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Error al obtener reportes: " . $e->getMessage());
+            return [];
+        }
+    }
+    
+    /**
+     * Obtener mi progreso con detalles adicionales
+     */
+    public function getMiProgreso($usuario_id, $reto_id) {
+        try {
+            $sql = "SELECT p.*, 
+                    (SELECT COUNT(*) FROM reportes r WHERE r.participacion_id = p.id) as total_reportes
+                    FROM participaciones p 
+                    WHERE p.usuario_id = :usuario_id AND p.reto_id = :reto_id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['usuario_id' => $usuario_id, 'reto_id' => $reto_id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Error al obtener progreso: " . $e->getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * Obtener todas las participaciones de un usuario con detalles de retos
+     */
+    public function getParticipacionesUsuario($usuario_id) {
+        try {
+            $sql = "SELECT p.*, r.titulo, r.descripcion, r.categoria_id, r.puntos_recompensa, 
+                           r.fecha_fin, c.nombre as categoria_nombre, c.icono as categoria_icono
+                    FROM participaciones p
+                    JOIN retos r ON p.reto_id = r.id
+                    JOIN categorias c ON r.categoria_id = c.id
+                    WHERE p.usuario_id = :usuario_id 
+                    ORDER BY CASE WHEN p.estado = 'en_progreso' THEN 1 ELSE 2 END, p.fecha_union DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['usuario_id' => $usuario_id]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log("Error al obtener participaciones del usuario: " . $e->getMessage());
+            return [];
+        }
+    }
+    
+    /**
+     * Obtener total de reportes de un usuario
+     */
+    public function getTotalReportesUsuario($usuario_id) {
+        try {
+            $sql = "SELECT COUNT(*) as total FROM reportes WHERE usuario_id = :usuario_id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['usuario_id' => $usuario_id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result['total'] ?? 0;
+        } catch (Exception $e) {
+            error_log("Error al obtener total de reportes: " . $e->getMessage());
+            return 0;
+        }
+    }
     
     // ========== MÉTODOS PRIVADOS ==========
     

@@ -11,109 +11,81 @@ if (!$user_logged_in) {
     exit();
 }
 
+// Incluir modelos
+require_once 'config/database.php';
+require_once 'models/Reto.php';
+
+$retoModel = new Reto();
+
 // Datos del usuario
 $user_name = $_SESSION['user_name'];
 $user_points = $_SESSION['user_points'];
 $user_avatar = $_SESSION['user_avatar'];
+$usuario_id = $_SESSION['user_id'];
 
-// Retos en los que está inscrito (en progreso)
-$retos_inscritos = [
-    [
-        'id' => 1,
-        'titulo' => 'Planta un Árbol Nativo',
-        'descripcion' => 'Planta árboles nativos en tu comunidad',
-        'categoria' => 'arboles',
-        'puntos' => 100,
-        'fecha_inicio' => '2025-12-01',
-        'fecha_limite' => '2025-12-31',
-        'icono' => '🌳',
-        'progreso' => 60,
-        'tareas_completadas' => 3,
-        'tareas_totales' => 5,
-        'estado' => 'en_progreso'
-    ],
-    [
-        'id' => 2,
-        'titulo' => 'Limpieza de Quebrada',
-        'descripcion' => 'Limpia ríos y quebradas locales',
-        'categoria' => 'agua',
-        'puntos' => 150,
-        'fecha_inicio' => '2025-12-05',
-        'fecha_limite' => '2025-12-12',
-        'icono' => '💧',
-        'progreso' => 45,
-        'tareas_completadas' => 2,
-        'tareas_totales' => 4,
-        'estado' => 'en_progreso'
-    ],
-    [
-        'id' => 4,
-        'titulo' => 'Reduce el Plástico',
-        'descripcion' => 'Elimina plásticos de un solo uso',
-        'categoria' => 'residuos',
-        'puntos' => 50,
-        'fecha_inicio' => '2025-12-03',
-        'fecha_limite' => '2025-12-10',
-        'icono' => '♻',
-        'progreso' => 30,
-        'tareas_completadas' => 1,
-        'tareas_totales' => 3,
-        'estado' => 'en_progreso'
-    ]
-];
+// Obtener retos en los que está inscrito (en progreso)
+$retos_inscritos = [];
+// Obtener retos completados
+$retos_completados = [];
 
-// Retos completados
-$retos_completados = [
-    [
-        'id' => 5,
-        'titulo' => 'Semana sin Plástico',
-        'descripcion' => 'Una semana completa sin usar plásticos',
-        'categoria' => 'residuos',
-        'puntos' => 80,
-        'fecha_completado' => '2025-11-28',
-        'icono' => '♻',
-        'insignia' => '🏅',
-        'posicion_ranking' => 12
-    ],
-    [
-        'id' => 6,
-        'titulo' => 'Voluntario de Reciclaje',
-        'descripcion' => 'Participar en jornada de reciclaje comunitario',
-        'categoria' => 'residuos',
-        'puntos' => 120,
-        'fecha_completado' => '2025-11-15',
-        'icono' => '♻',
-        'insignia' => '🌟',
-        'posicion_ranking' => 8
-    ],
-    [
-        'id' => 7,
-        'titulo' => 'Observador de Aves',
-        'descripcion' => 'Registra 10 especies de aves diferentes',
-        'categoria' => 'fauna',
-        'puntos' => 90,
-        'fecha_completado' => '2025-11-05',
-        'icono' => '🐦',
-        'insignia' => '⭐',
-        'posicion_ranking' => 15
-    ]
-];
+if ($user_logged_in) {
+    $participaciones = $retoModel->getParticipacionesUsuario($usuario_id);
+    
+    foreach ($participaciones as $participacion) {
+        $reto = [
+            'id' => $participacion['reto_id'],
+            'titulo' => $participacion['titulo'],
+            'descripcion' => $participacion['descripcion'],
+            'categoria' => $participacion['categoria_nombre'],
+            'puntos' => $participacion['puntos_recompensa'],
+            'fecha_inicio' => $participacion['fecha_union'],
+            'fecha_limite' => $participacion['fecha_fin'],
+            'icono' => $participacion['categoria_icono'],
+            'progreso' => $participacion['progreso'],
+            'estado' => $participacion['estado'],
+            'puntos_obtenidos' => $participacion['puntos_obtenidos'] ?? 0
+        ];
+        
+       if ($participacion['estado'] == 'en_progreso') {
+    // Obtener reportes para calcular tareas
+    $reportes = $retoModel->getReportesPorParticipacion($participacion['id']);
+    $reto['tareas_completadas'] = count($reportes);
+    $reto['tareas_totales'] = 5; // Cambiado de 4 a 5 tareas
+    $retos_inscritos[] = $reto;
+
+        } elseif ($participacion['estado'] == 'completado') {
+            $reto['fecha_completado'] = $participacion['fecha_completado'];
+            $reto['insignia'] = '🏅';
+            $reto['posicion_ranking'] = rand(1, 20); // Esto debería venir de la base de datos
+            $retos_completados[] = $reto;
+        }
+    }
+}
+
+// Obtener estadísticas reales
+$total_reportes = $retoModel->getTotalReportesUsuario($usuario_id);
 
 // Estadísticas del usuario
 $estadisticas = [
     'total_retos_completados' => count($retos_completados),
-    'total_puntos_ganados' => array_sum(array_column($retos_completados, 'puntos')),
+    'total_puntos_ganados' => array_sum(array_column($retos_completados, 'puntos_obtenidos')),
     'retos_en_progreso' => count($retos_inscritos),
-    'racha_dias' => 12,
-    'posicion_general' => 45
+    'total_reportes' => $total_reportes,
+    'racha_dias' => 12, // Esto debería calcularse
+    'posicion_general' => 45 // Esto debería venir de la base de datos
 ];
 
 // Calcular días restantes para retos activos
-function diasRestantes($fecha_limite) {
-    $hoy = new DateTime();
-    $limite = new DateTime($fecha_limite);
-    $diff = $hoy->diff($limite);
-    return $diff->days;
+// Calcular días restantes para retos activos - MODIFICADO CON CONDICIÓN
+if (!function_exists('diasRestantes')) {
+    function diasRestantes($fecha_limite) {
+        if (!$fecha_limite) return 'Sin fecha límite';
+        $hoy = new DateTime();
+        $limite = new DateTime($fecha_limite);
+        if ($hoy > $limite) return 'Expirado';
+        $diff = $hoy->diff($limite);
+        return $diff->days . ' días';
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -184,10 +156,10 @@ function diasRestantes($fecha_limite) {
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">🎯</div>
+                    <div class="stat-icon">📊</div>
                     <div class="stat-info">
-                        <span class="stat-number"><?php echo $estadisticas['retos_en_progreso']; ?></span>
-                        <span class="stat-label">En Progreso</span>
+                        <span class="stat-number"><?php echo $estadisticas['total_reportes']; ?></span>
+                        <span class="stat-label">Reportes Enviados</span>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -227,7 +199,7 @@ function diasRestantes($fecha_limite) {
                     <span class="empty-icon">📋</span>
                     <h3>No tienes retos activos</h3>
                     <p>¡Únete a nuevos retos y empieza a hacer la diferencia!</p>
-                    <a href="index.php#retos" class="btn-primary">Explorar Retos</a>
+                    <a href="retos.php" class="btn-primary">Explorar Retos</a>
                 </div>
             <?php else: ?>
                 <div class="challenges-grid">
@@ -237,7 +209,7 @@ function diasRestantes($fecha_limite) {
                             <span class="challenge-icon-large"><?php echo $reto['icono']; ?></span>
                             <div class="challenge-status">
                                 <span class="status-badge in-progress">En Progreso</span>
-                                <span class="days-left"><?php echo diasRestantes($reto['fecha_limite']); ?> días restantes</span>
+                                <span class="days-left"><?php echo diasRestantes($reto['fecha_limite']); ?></span>
                             </div>
                         </div>
                         
@@ -264,7 +236,7 @@ function diasRestantes($fecha_limite) {
                                 <span class="points-icon">⭐</span>
                                 <span><?php echo $reto['puntos']; ?> puntos</span>
                             </div>
-                            <a href="reto-detalle.php?id=<?php echo $reto['id']; ?>" class="btn-continue">Continuar →</a>
+                            <a href="reto.php?id=<?php echo $reto['id']; ?>" class="btn-continue">Continuar →</a>
                         </div>
                     </div>
                     <?php endforeach; ?>
@@ -284,7 +256,7 @@ function diasRestantes($fecha_limite) {
                     <span class="empty-icon">🏆</span>
                     <h3>Aún no has completado retos</h3>
                     <p>¡Empieza tu primer reto y únete a la comunidad verde!</p>
-                    <a href="index.php#retos" class="btn-primary">Ver Retos Disponibles</a>
+                    <a href="retos.php" class="btn-primary">Ver Retos Disponibles</a>
                 </div>
             <?php else: ?>
                 <div class="completed-grid">
@@ -298,11 +270,11 @@ function diasRestantes($fecha_limite) {
                         <div class="completed-stats">
                             <div class="completed-stat">
                                 <span class="stat-icon">⭐</span>
-                                <span class="stat-value">+<?php echo $reto['puntos']; ?> pts</span>
+                                <span class="stat-value">+<?php echo $reto['puntos_obtenidos']; ?> pts</span>
                             </div>
                             <div class="completed-stat">
-                                <span class="stat-icon">🏅</span>
-                                <span class="stat-value">Top <?php echo $reto['posicion_ranking']; ?></span>
+                                <span class="stat-icon">📊</span>
+                                <span class="stat-value"><?php echo $reto['progreso']; ?>%</span>
                             </div>
                         </div>
 
@@ -312,8 +284,8 @@ function diasRestantes($fecha_limite) {
                         </div>
 
                         <div class="completed-actions">
-                            <button class="btn-share">Compartir</button>
-                            <button class="btn-repeat">Repetir Reto</button>
+                            <a href="reto.php?id=<?php echo $reto['id']; ?>" class="btn-share">Ver Detalles</a>
+                            <button class="btn-repeat" onclick="repetirReto(<?php echo $reto['id']; ?>)">Repetir Reto</button>
                         </div>
                     </div>
                     <?php endforeach; ?>
@@ -381,9 +353,6 @@ function diasRestantes($fecha_limite) {
         </div>
     </footer>
 
-    <script src="script.js"></script>
-    
-    <!-- JavaScript unificado -->
     <script>
     // ============================================
     // MIS RETOS - JAVASCRIPT
@@ -416,7 +385,6 @@ function diasRestantes($fecha_limite) {
                 
                 // Guardar tab activo en localStorage
                 localStorage.setItem('activeTab', targetTab);
-                
             });
         });
         
@@ -428,303 +396,14 @@ function diasRestantes($fecha_limite) {
                 tabToActivate.click();
             }
         }
-        
-        // ============================================
-        // BOTONES DE CONTINUAR RETO
-        // ============================================
-        const continueButtons = document.querySelectorAll('.btn-continue');
-        
-        continueButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
-                // Agregar efecto visual
-                this.style.transform = 'scale(0.95)';
-                setTimeout(() => {
-                    this.style.transform = '';
-                }, 150);
-            });
-        });
-        
-        // ============================================
-        // COMPARTIR RETOS COMPLETADOS
-        // ============================================
-        const shareButtons = document.querySelectorAll('.btn-share');
-        
-        shareButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const card = this.closest('.completed-card');
-                const retoTitle = card.querySelector('.completed-title').textContent;
-                const puntos = card.querySelector('.completed-stat .stat-value').textContent;
-                
-                // Crear mensaje para compartir
-                const mensaje = `¡Acabo de completar el reto "${retoTitle}" y gané ${puntos}! 🎉🌱 #RetosVerdes #PanamáVerde`;
-                
-                // Intentar usar Web Share API si está disponible
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'Reto Completado - Retos Verdes',
-                        text: mensaje,
-                        url: window.location.href
-                    }).then(() => {
-                        showNotification('¡Compartido exitosamente! 🎉');
-                    }).catch((error) => {
-                        if (error.name !== 'AbortError') {
-                            copyToClipboard(mensaje);
-                        }
-                    });
-                } else {
-                    // Fallback: copiar al clipboard
-                    copyToClipboard(mensaje);
-                }
-            });
-        });
-        
-        // ============================================
-        // REPETIR RETO
-        // ============================================
-        const repeatButtons = document.querySelectorAll('.btn-repeat');
-        
-        repeatButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const card = this.closest('.completed-card');
-                const retoTitle = card.querySelector('.completed-title').textContent;
-                
-                const confirmar = confirm(`¿Quieres volver a participar en el reto "${retoTitle}"?`);
-                
-                if (confirmar) {
-                    showNotification('¡Te has inscrito nuevamente en el reto! 🎯');
-                    
-                    // Animación de éxito
-                    card.style.transform = 'scale(1.05)';
-                    card.style.boxShadow = '0 12px 32px rgba(46, 204, 113, 0.3)';
-                    
-                    setTimeout(() => {
-                        card.style.transform = '';
-                        card.style.boxShadow = '';
-                    }, 300);
-                    
-                    // Aquí puedes agregar la lógica para inscribir al usuario
-                    // inscribirEnReto(retoId);
-                }
-            });
-        });
-        
-        // ============================================
-        // ANIMACIÓN DE PROGRESO
-        // ============================================
-        const progressBars = document.querySelectorAll('.progress-fill-large');
-        
-        // Animar barras de progreso cuando sean visibles
-        const observerOptions = {
-            threshold: 0.5,
-            rootMargin: '0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const progressBar = entry.target;
-                    const width = progressBar.style.width;
-                    progressBar.style.width = '0%';
-                    
-                    setTimeout(() => {
-                        progressBar.style.width = width;
-                    }, 100);
-                    
-                    observer.unobserve(progressBar);
-                }
-            });
-        }, observerOptions);
-        
-        progressBars.forEach(bar => observer.observe(bar));
-        
-        // ============================================
-        // CONTADOR DE ESTADÍSTICAS ANIMADO
-        // ============================================
-        const statNumbers = document.querySelectorAll('.stat-number');
-        
-        statNumbers.forEach(stat => {
-            const finalValue = parseInt(stat.textContent.replace(/,/g, ''));
-            animateCounter(stat, 0, finalValue, 1500);
-        });
-        
-        // ============================================
-        // HOVER EFFECTS EN CARDS
-        // ============================================
-        const challengeCards = document.querySelectorAll('.challenge-card-progress');
-        
-        challengeCards.forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transition = 'all 0.3s ease';
-            });
-        });
-        
-        // ============================================
-        // DÍAS RESTANTES - ACTUALIZACIÓN DINÁMICA
-        // ============================================
-        const daysLeftElements = document.querySelectorAll('.days-left');
-        
-        daysLeftElements.forEach(element => {
-            const days = parseInt(element.textContent);
-            
-            if (days <= 3) {
-                element.style.color = '#e74c3c';
-                element.style.fontWeight = '700';
-                element.textContent = `⚠️ ${days} días restantes`;
-            } else if (days <= 7) {
-                element.style.color = '#f39c12';
-                element.style.fontWeight = '600';
-            }
-        });
-        
     });
 
-    // ============================================
-    // FUNCIONES AUXILIARES
-    // ============================================
-
-    function showNotification(mensaje, tipo = 'success') {
-        // Crear elemento de notificación
-        const notification = document.createElement('div');
-        notification.className = 'custom-notification';
-        
-        const icon = tipo === 'success' ? '✓' : 'ℹ';
-        const bgColor = tipo === 'success' 
-            ? 'linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)'
-            : 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)';
-        
-        notification.innerHTML = `
-            <span class="notification-icon">${icon}</span>
-            <span class="notification-text">${mensaje}</span>
-        `;
-        
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${bgColor};
-            color: white;
-            padding: 16px 24px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 600;
-            animation: slideInRight 0.3s ease;
-            max-width: 400px;
-        `;
-        
-        document.body.appendChild(notification);
-        
-        // Remover después de 3 segundos
-        setTimeout(() => {
-            notification.style.animation = 'slideOutRight 0.3s ease';
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
-    }
-
-    function copyToClipboard(text) {
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(text).then(() => {
-                showNotification('¡Mensaje copiado al portapapeles! 📋');
-            }).catch(() => {
-                fallbackCopyToClipboard(text);
-            });
-        } else {
-            fallbackCopyToClipboard(text);
+    function repetirReto(retoId) {
+        if (confirm('¿Quieres volver a participar en este reto?')) {
+            // Redirigir al reto
+            window.location.href = 'reto.php?id=' + retoId;
         }
     }
-
-    function fallbackCopyToClipboard(text) {
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        document.body.appendChild(textArea);
-        textArea.select();
-        
-        try {
-            document.execCommand('copy');
-            showNotification('¡Mensaje copiado al portapapeles! 📋');
-        } catch (err) {
-            showNotification('No se pudo copiar el mensaje', 'info');
-        }
-        
-        document.body.removeChild(textArea);
-    }
-
-    function animateCounter(element, start, end, duration) {
-        const range = end - start;
-        const increment = range / (duration / 16);
-        let current = start;
-        
-        const timer = setInterval(() => {
-            current += increment;
-            if (current >= end) {
-                current = end;
-                clearInterval(timer);
-            }
-            
-            // Formatear con comas para miles
-            element.textContent = Math.floor(current).toLocaleString();
-        }, 16);
-    }
-
-    // ============================================
-    // ANIMACIONES CSS
-    // ============================================
-    const styleSheet = document.createElement('style');
-    styleSheet.textContent = `
-        @keyframes slideInRight {
-            from {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes slideOutRight {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(400px);
-                opacity: 0;
-            }
-        }
-        
-        .notification-icon {
-            font-size: 20px;
-            font-weight: bold;
-        }
-        
-        .notification-text {
-            font-size: 15px;
-        }
-        
-        /* Smooth transitions */
-        .challenge-card-progress,
-        .completed-card,
-        .stat-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        /* Pulse animation para días restantes */
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        
-        .days-left[style*="color: #e74c3c"] {
-            animation: pulse 2s ease-in-out infinite;
-        }
-    `;
-    document.head.appendChild(styleSheet);
     </script>
 </body>
 </html>

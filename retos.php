@@ -4,8 +4,28 @@ require_once 'includes/auth.php';
 require_once 'models/Reto.php';
 
 $retoModel = new Reto();
-$usuario = getUsuario();
 $user_logged_in = estaLogueado();
+
+// Obtener usuario de manera segura
+if ($user_logged_in) {
+    $usuario = getUsuario();
+    // Si getUsuario() retorna false, crear un array vacío
+    if (!$usuario || !is_array($usuario)) {
+        $usuario = [
+            'puntos_totales' => 0,
+            'avatar' => '👤',
+            'nombre' => 'Usuario',
+            'apellido' => ''
+        ];
+    }
+} else {
+    $usuario = [
+        'puntos_totales' => 0,
+        'avatar' => '👤',
+        'nombre' => 'Invitado',
+        'apellido' => ''
+    ];
+}
 
 // Filtros
 $categoria = isset($_GET['categoria']) ? $_GET['categoria'] : 'todos';
@@ -27,7 +47,6 @@ $categorias = $retoModel->getCategorias();
     <link rel="stylesheet" href="retos.css">
     <link rel="stylesheet" href="reto-detalle.css">
     <link href="https://fonts.googleapis.com/css2?family=Clash+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-
 </head>
 <body>
     <!-- Header -->
@@ -50,20 +69,14 @@ $categorias = $retoModel->getCategorias();
                     <?php if ($user_logged_in): ?>
                         <div class="user-points">
                             <span class="points-icon">⭐</span>
-                            <span class="points-value"><?php echo number_format($usuario['puntos_totales']); ?></span>
+                            <span class="points-value"><?php echo number_format($usuario['puntos_totales'] ?? 0); ?></span>
                         </div>
                         <a href="perfil.php" class="user-avatar">
-                            <span><?php echo $usuario['avatar']; ?></span>
+                            <span><?php echo $usuario['avatar'] ?? '👤'; ?></span>
                         </a>
-                        <a href="logout.php" class="btn-logout">
-                            <span class="btn-icon"></span>
-                            <span>Cerrar Sesión</span>
-                        </a>
+                        <a href="logout.php" class="btn-logout">Cerrar Sesión</a>
                     <?php else: ?>
-                        <a href="login.php" class="btn-login">
-                            <span class="btn-icon"></span>
-                            <span>Iniciar Sesión</span>
-                        </a>
+                        <a href="login.php" class="btn-primary">Iniciar Sesión</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -155,7 +168,7 @@ $categorias = $retoModel->getCategorias();
                                 <?php echo $reto['puntos_recompensa']; ?> pts
                             </span>
                         </div>
-                        <a href="reto-detalle.php?id=<?php echo $reto['id']; ?>" class="btn btn-challenge">Ver Reto</a>
+                        <a href="reto.php?id=<?php echo $reto['id']; ?>" class="btn btn-challenge">Ver Reto</a>
                     </div>
                 </div>
                 <?php endforeach; ?>
